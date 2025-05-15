@@ -4,13 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>無料パスワード強度チェッカー</title>
-    <!-- Font Awesome CDN for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <!-- Google Fonts: Roboto -->
+    <!-- Roboto Font from Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap" rel="stylesheet">
+    <!-- Font Awesome CDN for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
+        /* Google Sans Font Definition (Optional: can be removed if not used as fallback) */
+        /*
+        See: https://fonts.google.com/license/googlerestricted
+        */
+        @font-face {
+        font-family: 'Google Sans';
+        font-style: italic;
+        font-weight: 400;
+        src: url(https://fonts.gstatic.com/s/googlesans/v62/4Ua9rENHsxJlGDuGo1OIlL3L2JB874GPhFI9_IqmuRqGpjeaLi42kO8QvnQOs5beU3yksanMY0EhlyvKEwg6X4s.ttf) format('truetype');
+        }
+        @font-face {
+        font-family: 'Google Sans';
+        font-style: italic;
+        font-weight: 500;
+        src: url(https://fonts.gstatic.com/s/googlesans/v62/4Ua9rENHsxJlGDuGo1OIlL3L2JB874GPhFI9_IqmuRqGpjeaLi42kO8QvnQOs5beU3yksanMY3MhlyvKEwg6X4s.ttf) format('truetype');
+        }
+        @font-face {
+        font-family: 'Google Sans';
+        font-style: italic;
+        font-weight: 700;
+        src: url(https://fonts.gstatic.com/s/googlesans/v62/4Ua9rENHsxJlGDuGo1OIlL3L2JB874GPhFI9_IqmuRqGpjeaLi42kO8QvnQOs5beU3yksanMY6YmlyvKEwg6X4s.ttf) format('truetype');
+        }
+        @font-face {
+        font-family: 'Google Sans';
+        font-style: normal;
+        font-weight: 400;
+        src: url(https://fonts.gstatic.com/s/googlesans/v62/4Ua_rENHsxJlGDuGo1OIlJfC6l_24rlCK1Yo_Iqcsih3SAyH6cAwhX9RFD48TE63OOYKtrwEIJllpyzAESo4.ttf) format('truetype');
+        }
+        @font-face {
+        font-family: 'Google Sans';
+        font-style: normal;
+        font-weight: 500;
+        src: url(https://fonts.gstatic.com/s/googlesans/v62/4Ua_rENHsxJlGDuGo1OIlJfC6l_24rlCK1Yo_Iqcsih3SAyH6cAwhX9RFD48TE63OOYKtrw2IJllpyzAESo4.ttf) format('truetype');
+        }
+        @font-face {
+        font-family: 'Google Sans';
+        font-style: normal;
+        font-weight: 700;
+        src: url(https://fonts.gstatic.com/s/googlesans/v62/4Ua_rENHsxJlGDuGo1OIlJfC6l_24rlCK1Yo_Iqcsih3SAyH6cAwhX9RFD48TE63OOYKtrzjJ5llpyzAESo4.ttf) format('truetype');
+        }
+
         /* General Styles & Theme Variables */
         :root {
             --bg-color: #ffffff;
@@ -54,6 +95,8 @@
                 --table-header-bg: #3c4043;
                 --table-border: #5f6368;
                 --link-color: #8ab4f8;
+
+                 /* Adjust dark text color for dark mode if needed, usually light is fine */
                 --color-text-dark: #202124;
             }
         }
@@ -66,7 +109,7 @@
         }
 
         body {
-            font-family: 'Roboto', Arial, sans-serif; /* Changed Font */
+            font-family: 'Roboto', Arial, sans-serif; /* Changed to Roboto */
             background-color: var(--bg-color);
             color: var(--text-color);
             line-height: 1.6;
@@ -91,7 +134,7 @@
             text-align: center;
             margin-bottom: 30px;
             color: var(--text-color);
-            font-weight: 500; /* Roboto Medium */
+            font-weight: 500; /* Roboto medium */
             opacity: 0;
             animation: fadeIn 0.6s 0.1s ease-out forwards;
         }
@@ -124,7 +167,6 @@
             font-size: 1rem;
             background-color: var(--input-bg);
             color: var(--text-color);
-            font-family: 'Roboto', Arial, sans-serif; /* Ensure input also uses Roboto */
         }
 
         #passwordInput:focus {
@@ -242,10 +284,11 @@
         }
 
          .result-item .value {
-            font-weight: 500; /* Roboto Medium */
+            font-weight: 500; /* Roboto medium */
             margin-left: auto;
             padding: 3px 8px;
             border-radius: 4px;
+            /* Default text color might be overridden by strength classes */
             color: var(--text-color);
          }
 
@@ -309,7 +352,6 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 0.9rem;
-            font-family: 'Roboto', Arial, sans-serif; /* Ensure button uses Roboto */
             margin-top: 20px;
             transition: background-color 0.2s ease, border-color 0.2s ease;
             opacity: 0;
@@ -331,7 +373,8 @@
         .table-container.visible {
             display: block;
              opacity: 1;
-             max-height: 70vh;
+             /* Adjust max-height if the extended table needs more space */
+             max-height: 70vh; /* Use viewport height for more flexibility */
              animation: fadeIn 0.5s ease-out forwards;
         }
 
@@ -353,10 +396,10 @@
 
         #passwordStrengthTable th {
             background-color: var(--table-header-bg);
-            font-weight: 500; /* Roboto Medium */
+            font-weight: 500; /* Roboto medium */
         }
         #passwordStrengthTable td:first-child {
-            font-weight: 500; /* Roboto Medium */
+            font-weight: 500; /* Roboto medium */
             background-color: var(--table-header-bg);
              text-align: center;
         }
@@ -466,6 +509,8 @@
             const MONTH_CONSTANT = DAY_CONSTANT * 30n; // Approximation
             const YEAR_CONSTANT = DAY_CONSTANT * 365n; // Approximation
             const MURYOUTAISUU_YEARS_IN_MINUTES = YEAR_CONSTANT * 10n**68n;
+            // Calculate 9999.9 * MURYOUTAISUU_YEARS_IN_MINUTES using BigInt
+            // ( (10^68 * YEAR_CONSTANT) * 99999 ) / 10
             const DISPLAY_CAP_THRESHOLD_MINUTES = (MURYOUTAISUU_YEARS_IN_MINUTES * 99999n) / 10n;
             const DISPLAY_CAP_STRING = "9999.9無量大数年以上";
 
@@ -507,6 +552,7 @@
 
             // Japanese units for display (descending order) + New Units
             const japaneseUnits = [
+                // Added Units (power represents 10^power years)
                 { name: '無量大数年', threshold: MURYOUTAISUU_YEARS_IN_MINUTES, power: 68n },
                 { name: '不可思議年', threshold: YEAR_CONSTANT * 10n**64n, power: 64n },
                 { name: '那由他年', threshold: YEAR_CONSTANT * 10n**60n, power: 60n },
@@ -518,12 +564,14 @@
                 { name: '澗年', threshold: YEAR_CONSTANT * 10n**36n, power: 36n },
                 { name: '溝年', threshold: YEAR_CONSTANT * 10n**32n, power: 32n },
                 { name: '穣年', threshold: YEAR_CONSTANT * 10n**28n, power: 28n },
-                { name: '𥝱年', threshold: YEAR_CONSTANT * 10n**24n, power: 24n },
+                { name: '𥝱年', threshold: YEAR_CONSTANT * 10n**24n, power: 24n }, // Jō (or 秭)
                 { name: '垓年', threshold: YEAR_CONSTANT * 10n**20n, power: 20n },
+                // Original Large Units
                 { name: '京年', threshold: YEAR_CONSTANT * 10n**16n, power: 16n },
                 { name: '兆年', threshold: YEAR_CONSTANT * 10n**12n, power: 12n },
                 { name: '億年', threshold: YEAR_CONSTANT * 10n**8n, power: 8n },
                 { name: '万年', threshold: YEAR_CONSTANT * 10n**4n, power: 4n },
+                // Base Units
                 { name: '年', threshold: YEAR_CONSTANT, power: 0n },
                 { name: 'ヶ月', threshold: MONTH_CONSTANT },
                 { name: '週間', threshold: WEEK_CONSTANT },
@@ -538,119 +586,197 @@
                 lower: 26n,
                 upperLower: 52n,
                 numUpperLower: 62n,
-                all: 94n
+                all: 94n // Assuming ~32 symbols + numbers + upper + lower
             };
 
             // --- Helper Functions ---
+
+            // Converts total minutes (BigInt) to human-readable Japanese time string with cap
             function minutesToJapaneseTime(totalMinutesBigInt) {
                 if (totalMinutesBigInt === 0n) return '瞬時';
-                if (totalMinutesBigInt < 0n) return 'エラー';
-                if (totalMinutesBigInt >= DISPLAY_CAP_THRESHOLD_MINUTES) return DISPLAY_CAP_STRING;
+                if (totalMinutesBigInt < 0n) return 'エラー'; // Handle potential errors
+
+                // Check against the display cap first
+                if (totalMinutesBigInt >= DISPLAY_CAP_THRESHOLD_MINUTES) {
+                    return DISPLAY_CAP_STRING;
+                }
+
                 if (totalMinutesBigInt < MINUTE_CONSTANT) return '1分未満';
 
                 for (const unit of japaneseUnits) {
                     if (totalMinutesBigInt >= unit.threshold) {
                         const divisor = unit.threshold;
-                        const valueWithDecimal = (totalMinutesBigInt * 10n) / divisor;
+                        const valueWithDecimal = (totalMinutesBigInt * 10n) / divisor; // Get value * 10
+
                         const integerPart = valueWithDecimal / 10n;
                         const decimalPart = valueWithDecimal % 10n;
+
                         let displayValueStr = "";
                         try {
-                             displayValueStr = (integerPart <= BigInt(Number.MAX_SAFE_INTEGER)) ? Number(integerPart).toLocaleString() : integerPart.toString();
+                             if (integerPart <= BigInt(Number.MAX_SAFE_INTEGER)) {
+                                 displayValueStr = Number(integerPart).toLocaleString();
+                             } else {
+                                 displayValueStr = integerPart.toString();
+                             }
                         } catch (e) {
                              displayValueStr = integerPart.toString();
                         }
-                        if (decimalPart > 0n && unit.power !== undefined) {
+
+
+                        if (decimalPart > 0n && unit.power !== undefined) { // Show decimal for year-based units
                             displayValueStr += "." + decimalPart.toString();
                         }
+
+                        // Handle 万年 correctly if the unit is '年' but value is >= 1万年
                         if (unit.name === '年' && integerPart >= 10000n) {
                             const manUnit = japaneseUnits.find(u => u.name === '万年');
                             if (manUnit) {
                                 const manValueWithDecimal = (totalMinutesBigInt * 10n) / manUnit.threshold;
                                 const manIntegerPart = manValueWithDecimal / 10n;
                                 const manDecimalPart = manValueWithDecimal % 10n;
+
                                 try {
-                                    displayValueStr = (manIntegerPart <= BigInt(Number.MAX_SAFE_INTEGER)) ? Number(manIntegerPart).toLocaleString() : manIntegerPart.toString();
+                                    if (manIntegerPart <= BigInt(Number.MAX_SAFE_INTEGER)) {
+                                        displayValueStr = Number(manIntegerPart).toLocaleString();
+                                    } else {
+                                        displayValueStr = manIntegerPart.toString();
+                                    }
                                 } catch (e) {
                                      displayValueStr = manIntegerPart.toString();
                                 }
-                                if (manDecimalPart > 0n) displayValueStr += "." + manDecimalPart.toString();
+
+                                if (manDecimalPart > 0n) {
+                                    displayValueStr += "." + manDecimalPart.toString();
+                                }
                                 return `${displayValueStr}万年`;
                             }
                         }
                         return `${displayValueStr}${unit.name}`;
                     }
                 }
-                return `${totalMinutesBigInt.toString()}分`;
+                return `${totalMinutesBigInt.toString()}分`; // Fallback
             }
 
+
+            // Parses raw time string (e.g., "15ty") and returns total minutes as BigInt
             function parseRawTimeToMinutes(rawTime) {
                 if (rawTime === 'i') return 0n;
+
                 const match = rawTime.match(/^(\d+)([a-zA-Z]+)$/);
                 if (!match) return -1n;
+
                 try {
                     const number = BigInt(match[1]);
                     const unitCode = match[2];
                     const multiplier = unitMultipliers[unitCode];
                     if (!multiplier) return -1n;
                     return number * multiplier;
-                } catch (e) { return -1n; }
+                } catch (e) {
+                     console.error("Error parsing raw time:", rawTime, e);
+                     return -1n;
+                }
             }
 
+             // Get color class based on minutes (using BigInt for comparison)
             function getColorClassForTime(totalMinutesBigInt) {
                  if (totalMinutesBigInt < 0n) return '';
-                 const thresholds = [WEEK_CONSTANT, YEAR_CONSTANT * 100n, YEAR_CONSTANT * 10000n, YEAR_CONSTANT * 10n**12n];
+
+                 const thresholdStep2 = WEEK_CONSTANT;
+                 const thresholdStep3 = YEAR_CONSTANT * 100n;
+                 const thresholdStep4 = YEAR_CONSTANT * 10000n;
+                 const thresholdStep5 = YEAR_CONSTANT * 10n**12n;
+
                  if (totalMinutesBigInt === 0n) return 'color-step1';
-                 if (totalMinutesBigInt < thresholds[0]) return 'color-step2';
-                 if (totalMinutesBigInt < thresholds[1]) return 'color-step3';
-                 if (totalMinutesBigInt < thresholds[2]) return 'color-step4';
-                 if (totalMinutesBigInt < thresholds[3]) return 'color-step5';
+                 if (totalMinutesBigInt < thresholdStep2) return 'color-step2';
+                 if (totalMinutesBigInt < thresholdStep3) return 'color-step3';
+                 if (totalMinutesBigInt < thresholdStep4) return 'color-step4';
+                 if (totalMinutesBigInt < thresholdStep5) return 'color-step5';
                  return 'color-step6';
             }
 
+            // Simple BigInt power function (base^exp)
             function bigIntPower(base, exp) {
                 let res = 1n;
-                if (exp < 0n) return 0n;
+                let currentBase = base;
+                let currentExp = exp;
+                if (exp < 0n) return 0n; // Or throw error for negative exponent
                 if (exp === 0n) return 1n;
-                for (let i = 0n; i < exp; i++) { // Simplified for clarity, though binary exponentiation is faster for huge exp
-                    if (res > DISPLAY_CAP_THRESHOLD_MINUTES * 1000n / base) return DISPLAY_CAP_THRESHOLD_MINUTES * 1000n; // Overflow guard
-                    res *= base;
+                while (currentExp > 0n) {
+                    if (currentExp % 2n === 1n) res *= currentBase;
+                    currentBase *= currentBase;
+                    currentExp /= 2n;
                 }
                 return res;
             }
 
+
+             // Extrapolates time based on length, category, and base time at 18 chars
             function extrapolateTime(len, category, baseMinutesBigInt) {
                  if (baseMinutesBigInt < 0n) return -1n;
-                 if (baseMinutesBigInt === 0n && len > 18) return 0n;
+                 if (baseMinutesBigInt === 0n && len > 18) return 0n; // Instant remains instant
+
                  const charsetSize = charsetSizes[category] || 94n;
                  const exponent = BigInt(len - 18);
+
                  try {
                     const multiplier = bigIntPower(charsetSize, exponent);
                     const result = baseMinutesBigInt * multiplier;
-                     if (result > DISPLAY_CAP_THRESHOLD_MINUTES * 100n) return DISPLAY_CAP_THRESHOLD_MINUTES;
+                     // Cap the result if it significantly exceeds the display cap
+                     if (result > DISPLAY_CAP_THRESHOLD_MINUTES * 100n) { // Cap if > 100x display cap for calculation stability
+                        return DISPLAY_CAP_THRESHOLD_MINUTES;
+                     }
                     return result;
-                 } catch (e) { return DISPLAY_CAP_THRESHOLD_MINUTES; }
+                 } catch (e) {
+                     console.error("BigInt extrapolation error:", e, "len:", len, "base:", baseMinutesBigInt);
+                     return DISPLAY_CAP_THRESHOLD_MINUTES; // Fallback to cap on error
+                 }
              }
+
 
             // --- Event Listeners ---
             togglePassword.addEventListener('click', () => {
-                passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
                 togglePasswordIcon.classList.toggle('fa-eye');
                 togglePasswordIcon.classList.toggle('fa-eye-slash');
             });
-            function setupPopup(button, popup) { /* ... (same as before) ... */ }
+
+            function setupPopup(button, popup) {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if(popup !== timeInfoPopup) timeInfoPopup.classList.remove('visible');
+                    if(popup !== strengthInfoPopup) strengthInfoPopup.classList.remove('visible');
+                    popup.classList.toggle('visible');
+                });
+            }
             setupPopup(timeInfoBtn, timeInfoPopup);
             setupPopup(strengthInfoBtn, strengthInfoPopup);
-            document.addEventListener('click', () => { /* ... (same as before) ... */ });
+
+            document.addEventListener('click', () => {
+                timeInfoPopup.classList.remove('visible');
+                strengthInfoPopup.classList.remove('visible');
+            });
             timeInfoPopup.addEventListener('click', e => e.stopPropagation());
             strengthInfoPopup.addEventListener('click', e => e.stopPropagation());
-            toggleTableBtn.addEventListener('click', () => { /* ... (same as before) ... */ });
+
+            toggleTableBtn.addEventListener('click', () => {
+                const isVisible = tableContainer.classList.toggle('visible');
+                 toggleTableBtn.textContent = isVisible ? '強度表を非表示' : '強度表を表示';
+                 if (isVisible) {
+                     setTimeout(() => {
+                         tableContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                     }, 100);
+                 }
+            });
+
             passwordInput.addEventListener('input', evaluatePassword);
+
 
             // --- Core Evaluation Logic ---
             function evaluatePassword() {
                 const password = passwordInput.value;
                 const length = password.length;
+
                 crackTimeElement.textContent = '-';
                 passwordStrengthElement.textContent = '-';
                 crackTimeElement.className = 'value';
@@ -659,73 +785,128 @@
                      el.classList.remove('met');
                      el.querySelector('.icon i').className = 'fas fa-times';
                 });
+
                 if (length === 0) return;
-                const has = {
-                    upper: /[A-Z]/.test(password), lower: /[a-z]/.test(password),
-                    num: /[0-9]/.test(password), sym: /[^A-Za-z0-9]/.test(password)
-                };
+
+                const hasUppercase = /[A-Z]/.test(password);
+                const hasLowercase = /[a-z]/.test(password);
+                const hasNumber = /[0-9]/.test(password);
+                const hasSymbol = /[^A-Za-z0-9]/.test(password);
+
                 if (length >= 8) { lengthCheck.classList.add('met'); lengthCheck.querySelector('.icon i').className = 'fas fa-check'; }
-                if (has.upper) { uppercaseCheck.classList.add('met'); uppercaseCheck.querySelector('.icon i').className = 'fas fa-check'; }
-                if (has.num) { numberCheck.classList.add('met'); numberCheck.querySelector('.icon i').className = 'fas fa-check'; }
-                if (has.sym) { symbolCheck.classList.add('met'); symbolCheck.querySelector('.icon i').className = 'fas fa-check'; }
-                let category = 'lower';
-                if (has.num && !has.lower && !has.upper && !has.sym) category = 'num';
-                else if (has.lower && has.upper && !has.num && !has.sym) category = 'upperLower';
-                else if (has.lower && !has.upper && !has.num && !has.sym) category = 'lower';
-                else if (has.num && has.lower && has.upper && !has.sym) category = 'numUpperLower';
-                else if (has.num && has.lower && has.upper && has.sym) category = 'all';
-                else if (has.num && has.lower) category = 'numUpperLower';
-                else if (has.num && has.upper) category = 'numUpperLower';
-                else if (has.lower && has.sym) category = 'all';
-                else if (has.upper && has.sym) category = 'all';
-                else if (has.num && has.sym) category = 'all';
-                else if (has.upper) category = 'upperLower';
-                else category = 'all';
+                if (hasUppercase) { uppercaseCheck.classList.add('met'); uppercaseCheck.querySelector('.icon i').className = 'fas fa-check'; }
+                if (hasNumber) { numberCheck.classList.add('met'); numberCheck.querySelector('.icon i').className = 'fas fa-check'; }
+                if (hasSymbol) { symbolCheck.classList.add('met'); symbolCheck.querySelector('.icon i').className = 'fas fa-check'; }
+
+                 let category = 'lower';
+                 if (hasNumber && !hasLowercase && !hasUppercase && !hasSymbol) category = 'num';
+                 else if (hasLowercase && hasUppercase && !hasNumber && !hasSymbol) category = 'upperLower';
+                 else if (hasLowercase && !hasUppercase && !hasNumber && !hasSymbol) category = 'lower';
+                 else if (hasNumber && hasLowercase && hasUppercase && !hasSymbol) category = 'numUpperLower';
+                 else if (hasNumber && hasLowercase && hasUppercase && hasSymbol) category = 'all';
+                 else if (hasNumber && hasLowercase && !hasUppercase && !hasSymbol) category = 'numUpperLower';
+                 else if (hasNumber && hasUppercase && !hasLowercase && !hasSymbol) category = 'numUpperLower';
+                 else if (hasLowercase && hasSymbol && !hasNumber && !hasUppercase) category = 'all';
+                 else if (hasUppercase && hasSymbol && !hasNumber && !hasLowercase) category = 'all';
+                 else if (hasNumber && hasSymbol && !hasLowercase && !hasUppercase) category = 'all';
+                 else if (hasUppercase && !hasLowercase && !hasNumber && !hasSymbol) category = 'upperLower';
+                 else category = 'all';
+
                 let totalMinutesBigInt = 0n;
-                if (length < 4) totalMinutesBigInt = 0n;
-                else if (length <= 18) totalMinutesBigInt = parseRawTimeToMinutes(rawCrackTimes[length]?.[category] || 'i');
-                else totalMinutesBigInt = extrapolateTime(length, category, parseRawTimeToMinutes(rawCrackTimes[18]?.[category] || 'i'));
-                const timeText = minutesToJapaneseTime(totalMinutesBigInt);
-                let strengthText = '-', strengthColorClass = '';
-                if (totalMinutesBigInt >= 0n) {
+
+                if (length < 4) {
+                    totalMinutesBigInt = 0n;
+                } else if (length <= 18) {
+                    const rawTime = rawCrackTimes[length]?.[category];
+                    totalMinutesBigInt = parseRawTimeToMinutes(rawTime || 'i');
+                } else {
+                    const baseRawTime = rawCrackTimes[18]?.[category];
+                    const baseMinutesBigInt = parseRawTimeToMinutes(baseRawTime || 'i');
+                    totalMinutesBigInt = extrapolateTime(length, category, baseMinutesBigInt);
+                }
+
+                 const timeText = minutesToJapaneseTime(totalMinutesBigInt);
+                let strengthText = '-';
+                let strengthColorClass = '';
+
+                 if (totalMinutesBigInt >= 0n) {
                     const colorClass = getColorClassForTime(totalMinutesBigInt);
                     strengthColorClass = colorClass.replace('color-', 'strength-');
-                    const strengths = {'step1':'非常に弱い','step2':'弱い','step3':'普通','step4':'強い','step5':'非常に強い','step6':'極めて強い'};
-                    strengthText = strengths[strengthColorClass.replace('strength-','')] || '-';
-                }
+                    switch (strengthColorClass) {
+                        case 'strength-step1': strengthText = '非常に弱い'; break;
+                        case 'strength-step2': strengthText = '弱い'; break;
+                        case 'strength-step3': strengthText = '普通'; break;
+                        case 'strength-step4': strengthText = '強い'; break;
+                        case 'strength-step5': strengthText = '非常に強い'; break;
+                        case 'strength-step6': strengthText = '極めて強い'; break;
+                        default: strengthText = '-'; break;
+                    }
+                 }
+
                 crackTimeElement.textContent = timeText;
                 passwordStrengthElement.textContent = strengthText;
-                crackTimeElement.className = `value ${strengthColorClass}`;
-                passwordStrengthElement.className = `value ${strengthColorClass}`;
+                const baseClass = 'value ';
+                crackTimeElement.className = baseClass + strengthColorClass;
+                passwordStrengthElement.className = baseClass + strengthColorClass;
             }
 
             // --- Table Generation (Extended to 100 characters) ---
              function generateTable() {
                 tableBody.innerHTML = '';
                 const categories = ['num', 'lower', 'upperLower', 'numUpperLower', 'all'];
-                let len = 4;
-                const baseTimes = {};
-                 categories.forEach(cat => { baseTimes[cat] = parseRawTimeToMinutes(rawCrackTimes[18]?.[cat] || 'i'); });
+                let len = 4; // Starting length
 
-                while (len <= 100) {
+                // Pre-calculate base times for extrapolation for efficiency
+                const baseTimes = {};
+                 categories.forEach(cat => {
+                    baseTimes[cat] = parseRawTimeToMinutes(rawCrackTimes[18]?.[cat] || 'i');
+                 });
+
+
+                while (len <= 100) { // Generate rows up to 100 characters
                     const row = tableBody.insertRow();
-                    row.insertCell().textContent = len;
+                    const cellLength = row.insertCell();
+                    cellLength.textContent = len;
+
                     categories.forEach(cat => {
                         const cellTime = row.insertCell();
-                        let minutesBigInt = (len <= 18) ? parseRawTimeToMinutes(rawCrackTimes[len]?.[cat] || 'i') : extrapolateTime(len, cat, baseTimes[cat]);
-                        cellTime.textContent = minutesToJapaneseTime(minutesBigInt);
-                        const colorClass = getColorClassForTime(minutesBigInt);
-                        if (colorClass) cellTime.classList.add(colorClass);
+                        let minutesBigInt = -1n;
+                        let text = '-';
+                        let colorClass = '';
+
+                        if (len <= 18) {
+                            const rawTime = rawCrackTimes[len]?.[cat];
+                            minutesBigInt = parseRawTimeToMinutes(rawTime || 'i');
+                        } else {
+                             // Extrapolate using pre-calculated base time
+                             minutesBigInt = extrapolateTime(len, cat, baseTimes[cat]);
+                        }
+
+                         if (minutesBigInt >= 0n) {
+                            text = minutesToJapaneseTime(minutesBigInt);
+                            colorClass = getColorClassForTime(minutesBigInt);
+                         } else {
+                            text = 'エラー'; // Should ideally not happen with proper extrapolation
+                         }
+
+                        cellTime.textContent = text;
+                        if (colorClass) {
+                            cellTime.classList.add(colorClass);
+                        }
                     });
-                    len++;
+                    len++; // Increment length for the next row
                 }
             }
 
             // --- Initial Setup ---
             generateTable();
             evaluatePassword();
-            document.querySelectorAll('.fade-in').forEach((el, i) => el.style.animationDelay = `${i * 0.05}s`);
+
+            document.querySelectorAll('.fade-in').forEach((el, index) => {
+                el.style.animationDelay = `${index * 0.05}s`;
+            });
             document.body.style.opacity = 1;
+
         });
     </script>
 </body>
