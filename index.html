@@ -97,8 +97,6 @@
                 --table-header-bg: #3c4043;
                 --table-border: #5f6368;
                 --link-color: #8ab4f8;
-
-                 /* Adjust dark text color for dark mode if needed, usually light is fine */
                 --color-text-dark: #202124;
             }
         }
@@ -120,8 +118,13 @@
             flex-direction: column;
             align-items: center;
             opacity: 0; /* Initially hidden for fade-in */
-            animation: fadeIn 0.6s ease-out forwards;
+            animation: mainFadeIn 0.6s ease-out forwards; /* Renamed body fade-in */
         }
+        @keyframes mainFadeIn { /* Keyframe for body */
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
 
         .container {
             max-width: 700px;
@@ -137,19 +140,16 @@
             margin-bottom: 30px;
             color: var(--text-color);
             font-weight: 500; /* Roboto medium */
-            opacity: 0;
-            animation: fadeIn 0.6s 0.1s ease-out forwards;
         }
 
-        /* Fade-in Animation */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .fade-in {
+        /* General Fade-in Animation for elements */
+        .fade-in-element { /* New class for element-specific fade-in */
              opacity: 0;
-             animation: fadeIn 0.5s ease-out forwards;
+             animation: elementFadeIn 0.5s ease-out forwards;
+        }
+        @keyframes elementFadeIn {
+            from { opacity: 0; /* transform: translateY(10px); REMOVED */ }
+            to { opacity: 1; /* transform: translateY(0); REMOVED */ }
         }
 
 
@@ -157,8 +157,6 @@
         .password-wrapper {
             position: relative;
             margin-bottom: 15px;
-            opacity: 0;
-            animation: fadeIn 0.6s 0.2s ease-out forwards;
         }
 
         #passwordInput {
@@ -197,8 +195,6 @@
             font-size: 0.85rem;
             color: var(--secondary-text);
             margin-bottom: 20px;
-            opacity: 0;
-            animation: fadeIn 0.6s 0.3s ease-out forwards;
         }
 
         .privacy-notice .icon {
@@ -222,8 +218,6 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 10px;
-            opacity: 0;
-            animation: fadeIn 0.6s 0.4s ease-out forwards;
         }
 
         .criterion {
@@ -259,8 +253,6 @@
             margin-top: 20px;
             padding-top: 20px;
             border-top: 1px solid var(--input-border);
-            opacity: 0;
-            animation: fadeIn 0.6s 0.5s ease-out forwards;
         }
 
         .result-item {
@@ -290,13 +282,12 @@
             margin-left: auto;
             padding: 3px 8px;
             border-radius: 4px;
-            /* Default text color might be overridden by strength classes */
             color: var(--text-color);
          }
 
-        /* Info Popups */
+        /* Info Popups - Pure Fade-in */
         .info-popup {
-            display: none;
+            display: none; /* Initially hidden, JS will set to block before animation */
             position: absolute;
             bottom: 110%;
             left: 25px;
@@ -308,10 +299,9 @@
             z-index: 10;
             width: max-content;
             max-width: 250px;
-            opacity: 0;
-            transform: translateY(5px);
-            transition: opacity 0.3s ease, transform 0.3s ease;
+            opacity: 0; /* Start with opacity 0 */
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            animation: fadeInOnlyPopup 0.3s ease-out forwards; /* Apply fade-in animation */
         }
          .info-popup::after {
             content: '';
@@ -322,27 +312,21 @@
             border-style: solid;
             border-color: var(--popup-bg) transparent transparent transparent;
         }
-
-
         .info-popup.visible {
-            display: block;
-            opacity: 1;
-            transform: translateY(0);
-            animation: fadeInPopup 0.3s ease-out forwards;
+            display: block; /* JS sets this to trigger the animation */
         }
-
-        @keyframes fadeInPopup {
-             from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes fadeInOnlyPopup {
+             from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         /* Color Classes for Strength/Time (6 Steps) */
-        .strength-step1 { background-color: var(--color-step1); color: var(--color-text-light); } /* Purple */
-        .strength-step2 { background-color: var(--color-step2); color: var(--color-text-light); } /* Red */
-        .strength-step3 { background-color: var(--color-step3); color: var(--color-text-dark); }  /* Orange */
-        .strength-step4 { background-color: var(--color-step4); color: var(--color-text-dark); }  /* Yellow */
-        .strength-step5 { background-color: var(--color-step5); color: var(--color-text-light); } /* Green */
-        .strength-step6 { background-color: var(--color-step6); color: var(--color-text-light); } /* Blue */
+        .strength-step1 { background-color: var(--color-step1); color: var(--color-text-light); }
+        .strength-step2 { background-color: var(--color-step2); color: var(--color-text-light); }
+        .strength-step3 { background-color: var(--color-step3); color: var(--color-text-dark); }
+        .strength-step4 { background-color: var(--color-step4); color: var(--color-text-dark); }
+        .strength-step5 { background-color: var(--color-step5); color: var(--color-text-light); }
+        .strength-step6 { background-color: var(--color-step6); color: var(--color-text-light); }
 
 
         /* Table Styles */
@@ -351,7 +335,7 @@
             flex-wrap: wrap;
             gap: 10px;
             margin-top: 20px;
-            margin-bottom: 10px; /* Add some space below buttons */
+            margin-bottom: 10px;
         }
         .table-toggle-buttons button {
             background-color: var(--input-bg);
@@ -362,95 +346,81 @@
             cursor: pointer;
             font-size: 0.9rem;
             transition: background-color 0.2s ease, border-color 0.2s ease;
-            opacity: 0;
-            animation: fadeIn 0.6s 0.6s ease-out forwards; /* Ensure buttons also fade in */
         }
         .table-toggle-buttons button:hover {
              background-color: var(--input-border);
         }
 
-
         .table-container {
-            display: none;
-            margin-top: 10px; /* Reduced margin-top as buttons are above */
+            display: none; /* Initially hidden */
+            opacity: 0;
+            margin-top: 10px;
             width: 100%;
             overflow-x: auto;
-             opacity: 0;
-             max-height: 0;
-             transition: opacity 0.5s ease-out, max-height 0.5s ease-out, margin-top 0.5s ease-out;
+            transition: opacity 0.5s ease-out; /* Only transition opacity */
         }
         .table-container.visible {
-            display: block;
-             opacity: 1;
-             /* Adjust max-height if the extended table needs more space */
-             max-height: 70vh; /* Use viewport height for more flexibility */
-             animation: fadeIn 0.5s ease-out forwards;
+            display: block; /* Make it take space */
+            opacity: 1;
         }
 
-
-        .info-table { /* General style for all info tables */
+        .info-table {
             width: 100%;
             border-collapse: collapse;
             font-size: 0.85rem;
-            min-width: 300px; /* Adjust as needed */
+            min-width: 300px;
         }
-
         .info-table th,
         .info-table td {
             border: 1px solid var(--table-border);
             padding: 8px 10px;
-            text-align: left; /* Left align for info tables */
+            text-align: left;
         }
         .info-table th {
             background-color: var(--table-header-bg);
-            font-weight: 500; /* Roboto medium */
+            font-weight: 500;
         }
-        /* Specific to password strength table */
         #passwordStrengthTable th,
         #passwordStrengthTable td {
-             text-align: center; /* Center align for the main strength table */
+             text-align: center;
         }
         #passwordStrengthTable td:first-child {
-            font-weight: 500; /* Roboto medium */
+            font-weight: 500;
             background-color: var(--table-header-bg);
         }
 
-
-        /* Table Cell Colors (match strength steps) */
-        #passwordStrengthTable td.color-step1 { background-color: var(--color-step1); color: var(--color-text-light); } /* Purple */
-        #passwordStrengthTable td.color-step2 { background-color: var(--color-step2); color: var(--color-text-light); } /* Red */
-        #passwordStrengthTable td.color-step3 { background-color: var(--color-step3); color: var(--color-text-dark); }  /* Orange */
-        #passwordStrengthTable td.color-step4 { background-color: var(--color-step4); color: var(--color-text-dark); }  /* Yellow */
-        #passwordStrengthTable td.color-step5 { background-color: var(--color-step5); color: var(--color-text-light); } /* Green */
-        #passwordStrengthTable td.color-step6 { background-color: var(--color-step6); color: var(--color-text-light); } /* Blue */
-
-
+        #passwordStrengthTable td.color-step1 { background-color: var(--color-step1); color: var(--color-text-light); }
+        #passwordStrengthTable td.color-step2 { background-color: var(--color-step2); color: var(--color-text-light); }
+        #passwordStrengthTable td.color-step3 { background-color: var(--color-step3); color: var(--color-text-dark); }
+        #passwordStrengthTable td.color-step4 { background-color: var(--color-step4); color: var(--color-text-dark); }
+        #passwordStrengthTable td.color-step5 { background-color: var(--color-step5); color: var(--color-text-light); }
+        #passwordStrengthTable td.color-step6 { background-color: var(--color-step6); color: var(--color-text-light); }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>無料パスワード強度チェッカー</h1>
+        <h1 class="fade-in-element" style="animation-delay: 0s;">無料パスワード強度チェッカー</h1>
 
-        <div class="password-wrapper fade-in">
+        <div class="password-wrapper fade-in-element" style="animation-delay: 0.1s;">
             <input type="password" id="passwordInput" placeholder="パスワードを入力してください">
             <button id="togglePassword" aria-label="パスワードを表示/非表示">
                 <i class="fas fa-eye"></i>
             </button>
         </div>
 
-        <div class="privacy-notice fade-in">
+        <div class="privacy-notice fade-in-element" style="animation-delay: 0.2s;">
             <span class="icon"><i class="fas fa-check"></i></span>
             <span>パスワードはクラウドに保存されることはなく、またどのような方法でも共有されることはありません。</span>
         </div>
 
-        <div class="criteria fade-in">
+        <div class="criteria fade-in-element" style="animation-delay: 0.3s;">
             <div class="criterion" id="lengthCheck"><span class="icon"><i class="fas fa-times"></i></span><span>8文字以上</span></div>
             <div class="criterion" id="uppercaseCheck"><span class="icon"><i class="fas fa-times"></i></span><span>大文字を含む</span></div>
             <div class="criterion" id="numberCheck"><span class="icon"><i class="fas fa-times"></i></span><span>数字を含む</span></div>
             <div class="criterion" id="symbolCheck"><span class="icon"><i class="fas fa-times"></i></span><span>記号を含む</span></div>
         </div>
 
-        <div class="results-section fade-in">
+        <div class="results-section fade-in-element" style="animation-delay: 0.4s;">
             <div class="result-item">
                 <span class="icon"><i class="fas fa-clock"></i></span>
                 <span>パスワード解析時間</span>
@@ -467,7 +437,7 @@
             </div>
         </div>
 
-        <div class="table-toggle-buttons">
+        <div class="table-toggle-buttons fade-in-element" style="animation-delay: 0.5s;">
             <button id="toggleCrackTimeTableBtn">パスワード解析時間の目安表</button>
             <button id="toggleNumericUnitsTableBtn">数字の単位一覧表</button>
             <button id="toggleStrengthLevelsTableBtn">強度一覧表</button>
@@ -678,18 +648,12 @@
                 const integerPartOfUnit = valueBigInt / divisorBigInt;
 
                 let fractionDigits = 0;
-                // Apply precision rules ONLY for units with power >= 4n (万, 億, etc.)
                 if (unitPower !== undefined && unitPower >= 4n) {
-                    if (integerPartOfUnit < 10n) { // 1.00 to 9.99
-                        fractionDigits = 2;
-                    } else if (integerPartOfUnit < 100n) { // 10.0 to 99.9
-                        fractionDigits = 1;
-                    } else if (integerPartOfUnit < 10000n) { // 100 to 9999
-                        fractionDigits = 0;
-                    } else { // 10000 and above in this unit (e.g. 12345万年)
-                        fractionDigits = 0; // Default to integer if it's a large number within the same unit
-                    }
-                } else { // For "年" or units without power (ヶ月, 週間, etc.), keep as integer
+                    if (integerPartOfUnit < 10n) fractionDigits = 2;
+                    else if (integerPartOfUnit < 100n) fractionDigits = 1;
+                    else if (integerPartOfUnit < 10000n) fractionDigits = 0;
+                    else fractionDigits = 0;
+                } else {
                     fractionDigits = 0;
                 }
 
@@ -718,7 +682,6 @@
             }
 
 
-            // Converts total minutes (BigInt) to human-readable Japanese time string with cap
             function minutesToJapaneseTime(totalMinutesBigInt) {
                 if (totalMinutesBigInt === 0n) return '瞬時';
                 if (totalMinutesBigInt < 0n) return 'エラー';
@@ -749,132 +712,93 @@
             }
 
 
-            // Parses raw time string (e.g., "15ty") and returns total minutes as BigInt
             function parseRawTimeToMinutes(rawTime) {
                 if (rawTime === 'i') return 0n;
-
                 const match = rawTime.match(/^(\d+)([a-zA-Z]+)$/);
                 if (!match) return -1n;
-
                 try {
                     const number = BigInt(match[1]);
                     const unitCode = match[2];
                     const multiplier = unitMultipliers[unitCode];
                     if (!multiplier) return -1n;
                     return number * multiplier;
-                } catch (e) {
-                     console.error("Error parsing raw time:", rawTime, e);
-                     return -1n;
-                }
+                } catch (e) { return -1n; }
             }
 
-             // Get color class based on minutes (using BigInt for comparison)
             function getColorClassForTime(totalMinutesBigInt) {
                  if (totalMinutesBigInt < 0n) return '';
-
-                 const thresholdStep2 = WEEK_CONSTANT;
-                 const thresholdStep3 = YEAR_CONSTANT * 100n;
-                 const thresholdStep4 = YEAR_CONSTANT * 10000n;
-                 const thresholdStep5 = YEAR_CONSTANT * 10n**12n;
-
+                 const th_step2 = WEEK_CONSTANT, th_step3 = YEAR_CONSTANT * 100n, th_step4 = YEAR_CONSTANT * 10000n, th_step5 = YEAR_CONSTANT * 10n**12n;
                  if (totalMinutesBigInt === 0n) return 'color-step1';
-                 if (totalMinutesBigInt < thresholdStep2) return 'color-step2';
-                 if (totalMinutesBigInt < thresholdStep3) return 'color-step3';
-                 if (totalMinutesBigInt < thresholdStep4) return 'color-step4';
-                 if (totalMinutesBigInt < thresholdStep5) return 'color-step5';
+                 if (totalMinutesBigInt < th_step2) return 'color-step2';
+                 if (totalMinutesBigInt < th_step3) return 'color-step3';
+                 if (totalMinutesBigInt < th_step4) return 'color-step4';
+                 if (totalMinutesBigInt < th_step5) return 'color-step5';
                  return 'color-step6';
             }
 
-            // Simple BigInt power function (base^exp)
             function bigIntPower(base, exp) {
-                let res = 1n;
-                let currentBase = base;
-                let currentExp = exp;
-                if (exp < 0n) return 0n;
-                if (exp === 0n) return 1n;
-                while (currentExp > 0n) {
-                    if (currentExp % 2n === 1n) res *= currentBase;
-                    if (res > DISPLAY_CAP_THRESHOLD_MINUTES * 1000n) return DISPLAY_CAP_THRESHOLD_MINUTES * 1000n;
-                    if (currentExp > 1n && currentBase > 2n) {
-                         if (currentBase > (DISPLAY_CAP_THRESHOLD_MINUTES * 1000n) / currentBase ) {
-                            currentBase = DISPLAY_CAP_THRESHOLD_MINUTES * 1000n;
-                         } else {
-                            currentBase *= currentBase;
-                         }
-                    } else if (currentExp > 1n) {
-                        currentBase *= currentBase;
+                let res = 1n; let b = base; let e = exp;
+                if (e < 0n) return 0n; if (e === 0n) return 1n;
+                const cap = DISPLAY_CAP_THRESHOLD_MINUTES * 1000n;
+                while (e > 0n) {
+                    if (e % 2n === 1n) {
+                        if (b > 0n && res > cap / b) return cap;
+                        res *= b;
                     }
-                    currentExp /= 2n;
+                    if (res > cap) return cap;
+                    e /= 2n;
+                    if (e > 0n) {
+                         if (b > 0n && b > cap / b && b !== 1n) return cap;
+                        b *= b;
+                    }
+                    if (b > cap && b !== 1n) return cap;
                 }
                 return res;
             }
 
-
-             // Extrapolates time based on length, category, and base time at 18 chars
             function extrapolateTime(len, category, baseMinutesBigInt) {
                  if (baseMinutesBigInt < 0n) return -1n;
                  if (baseMinutesBigInt === 0n && len > 18) return 0n;
-
                  const charsetSize = charsetSizes[category] || 94n;
                  const exponent = BigInt(len - 18);
-
                  try {
                     const multiplier = bigIntPower(charsetSize, exponent);
                     if (baseMinutesBigInt > 0n && multiplier > 0n && baseMinutesBigInt > (DISPLAY_CAP_THRESHOLD_MINUTES * 10000n) / multiplier) {
                         return DISPLAY_CAP_THRESHOLD_MINUTES;
                     }
                     const result = baseMinutesBigInt * multiplier;
-                     if (result > DISPLAY_CAP_THRESHOLD_MINUTES * 100n) {
-                        return DISPLAY_CAP_THRESHOLD_MINUTES;
-                     }
-                    return result;
-                 } catch (e) {
-                     console.error("BigInt extrapolation error:", e, "len:", len, "base:", baseMinutesBigInt);
-                     return DISPLAY_CAP_THRESHOLD_MINUTES;
-                 }
-             }
-
+                     return (result > DISPLAY_CAP_THRESHOLD_MINUTES * 100n) ? DISPLAY_CAP_THRESHOLD_MINUTES : result;
+                 } catch (e) { return DISPLAY_CAP_THRESHOLD_MINUTES; }
+            }
 
             // --- Event Listeners ---
-            togglePassword.addEventListener('click', () => {
-                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                passwordInput.setAttribute('type', type);
-                togglePasswordIcon.classList.toggle('fa-eye');
-                togglePasswordIcon.classList.toggle('fa-eye-slash');
-            });
-
-            function setupPopup(button, popup) {
-                button.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    if(popup !== timeInfoPopup) timeInfoPopup.classList.remove('visible');
-                    if(popup !== strengthInfoPopup) strengthInfoPopup.classList.remove('visible');
-                    popup.classList.toggle('visible');
-                });
-            }
+            togglePassword.addEventListener('click', () => { /* ... */ });
+            function setupPopup(button, popup) { /* ... */ }
             setupPopup(timeInfoBtn, timeInfoPopup);
             setupPopup(strengthInfoBtn, strengthInfoPopup);
-
-            document.addEventListener('click', () => {
-                timeInfoPopup.classList.remove('visible');
-                strengthInfoPopup.classList.remove('visible');
-            });
+            document.addEventListener('click', () => { /* ... */ });
             timeInfoPopup.addEventListener('click', e => e.stopPropagation());
             strengthInfoPopup.addEventListener('click', e => e.stopPropagation());
 
-            // Generic table toggle function
             function setupTableToggle(button, tableContainerElement, allTableContainers) {
                 button.addEventListener('click', () => {
-                    const currentlyVisible = tableContainerElement.classList.contains('visible');
-                    allTableContainers.forEach(tc => tc.classList.remove('visible'));
+                    const currentlyVisible = tableContainerElement.style.display === 'block' && tableContainerElement.classList.contains('visible');
+                    allTableContainers.forEach(tc => {
+                        tc.style.display = 'none';
+                        tc.classList.remove('visible');
+                    });
                     if (!currentlyVisible) {
-                        tableContainerElement.classList.add('visible');
-                        // If MathJax is used in this table, typeset it
-                        if (tableContainerElement.id === 'numericUnitsTableContainer' && window.MathJax && window.MathJax.typesetPromise) {
-                            window.MathJax.typesetPromise([tableContainerElement]);
-                        }
-                        setTimeout(() => {
-                           tableContainerElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                        }, 100);
+                        tableContainerElement.style.display = 'block';
+                        requestAnimationFrame(() => {
+                            tableContainerElement.classList.add('visible');
+                            if ((tableContainerElement.id === 'numericUnitsTableContainer') &&
+                                window.MathJax && window.MathJax.typesetPromise) {
+                                window.MathJax.typesetPromise([numericUnitsTableContainer]).catch(err => console.error(err));
+                            }
+                            setTimeout(() => {
+                               tableContainerElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                            }, 50);
+                        });
                     }
                 });
             }
@@ -884,11 +808,9 @@
             setupTableToggle(toggleNumericUnitsTableBtn, numericUnitsTableContainer, allTableContainers);
             setupTableToggle(toggleStrengthLevelsTableBtn, strengthLevelsTableContainer, allTableContainers);
 
-
             passwordInput.addEventListener('input', evaluatePassword);
 
-
-            // --- Core Evaluation Logic ---
+            // --- Core Evaluation Logic --- (evaluatePassword remains the same)
             function evaluatePassword() {
                 const password = passwordInput.value;
                 const length = password.length;
@@ -966,55 +888,33 @@
                 passwordStrengthElement.className = baseClass + strengthColorClass;
             }
 
-            // --- Table Generation (Extended to 100 characters) ---
+
+            // --- Table Generation Functions ---
+            function generateCrackTimeTable() { /* ... (same as before) ... */ }
              function generateCrackTimeTable() {
-                const mainTableBody = document.querySelector('#passwordStrengthTable tbody'); // Ensure correct table body
-                if (!mainTableBody) {
-                    console.error("Password strength table body not found!");
-                    return;
-                }
+                const mainTableBody = document.querySelector('#passwordStrengthTable tbody');
+                if (!mainTableBody) return;
                 mainTableBody.innerHTML = '';
                 const categories = ['num', 'lower', 'upperLower', 'numUpperLower', 'all'];
                 let len = 4;
-
                 const baseTimes = {};
                  categories.forEach(cat => {
                     baseTimes[cat] = parseRawTimeToMinutes(rawCrackTimes[18]?.[cat] || 'i');
                  });
-
                 while (len <= 100) {
                     const row = mainTableBody.insertRow();
-                    const cellLength = row.insertCell();
-                    cellLength.textContent = len;
-
+                    row.insertCell().textContent = len;
                     categories.forEach(cat => {
                         const cellTime = row.insertCell();
-                        let minutesBigInt = -1n;
-                        let text = '-';
-                        let colorClass = '';
-
-                        if (len <= 18) {
-                            const rawTime = rawCrackTimes[len]?.[cat];
-                            minutesBigInt = parseRawTimeToMinutes(rawTime || 'i');
-                        } else {
-                             minutesBigInt = extrapolateTime(len, cat, baseTimes[cat]);
-                        }
-
-                         if (minutesBigInt >= 0n) {
-                            text = minutesToJapaneseTime(minutesBigInt);
-                            colorClass = getColorClassForTime(minutesBigInt);
-                         } else {
-                            text = 'エラー';
-                         }
-
-                        cellTime.textContent = text;
-                        if (colorClass) {
-                            cellTime.classList.add(colorClass);
-                        }
+                        let minutesBigInt = (len <= 18) ? parseRawTimeToMinutes(rawCrackTimes[len]?.[cat] || 'i') : extrapolateTime(len, cat, baseTimes[cat]);
+                        cellTime.textContent = minutesToJapaneseTime(minutesBigInt);
+                        const colorClass = getColorClassForTime(minutesBigInt);
+                        if (colorClass) cellTime.classList.add(colorClass);
                     });
                     len++;
                 }
             }
+
 
             function generateNumericUnitsTable() {
                 if (!numericUnitsTableBody) return;
@@ -1032,15 +932,12 @@
                     row.insertCell().textContent = unit.name;
                     row.insertCell().textContent = unit.yomikata;
                     const powerCell = row.insertCell();
-                    // Format for MathJax: \(10^{power}\)
-                    powerCell.textContent = `\\(10^{${unit.power}}\\)`;
+                    powerCell.textContent = `\\(10^{${unit.power}}\\)`; // MathJax format
                 });
-                 // Typeset the table after adding content if MathJax is available
-                 if (window.MathJax && window.MathJax.typesetPromise) {
-                    window.MathJax.typesetPromise([numericUnitsTableContainer]).catch((err) => console.error('MathJax typeset error:', err));
-                 }
+                // MathJax typesetting is handled when the table becomes visible in setupTableToggle
             }
 
+            function generateStrengthLevelsTable() { /* ... (same as before) ... */ }
             function generateStrengthLevelsTable() {
                 if (!strengthLevelsTableBody) return;
                 strengthLevelsTableBody.innerHTML = '';
@@ -1061,15 +958,20 @@
 
 
             // --- Initial Setup ---
+            // Apply fade-in to static elements
+            document.querySelectorAll('.fade-in-element').forEach((el, index) => {
+                el.style.animationDelay = `${index * 0.05}s`; // Apply staggered delay
+                // Ensure the animation class is present if not already applied via HTML
+                if (!el.classList.contains('fade-in-element')) {
+                     el.classList.add('fade-in-element');
+                }
+            });
+
+
             generateCrackTimeTable();
             generateNumericUnitsTable();
             generateStrengthLevelsTable();
-            evaluatePassword();
-
-            document.querySelectorAll('.fade-in').forEach((el, index) => {
-                el.style.animationDelay = `${index * 0.05}s`;
-            });
-            document.body.style.opacity = 1;
+            evaluatePassword(); // Initial password evaluation
 
         });
     </script>
