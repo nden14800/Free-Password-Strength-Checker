@@ -506,7 +506,7 @@
             // --- DOM Element References ---
             const passwordInput = document.getElementById('passwordInput');
             const togglePassword = document.getElementById('togglePassword');
-            const togglePasswordIcon = togglePassword.querySelector('i');
+            const togglePasswordIcon = togglePassword.querySelector('i'); // Make sure this is selected
             const crackTimeElement = document.getElementById('crackTime');
             const passwordStrengthElement = document.getElementById('passwordStrength');
             const lengthCheck = document.getElementById('lengthCheck');
@@ -772,11 +772,51 @@
             }
 
             // --- Event Listeners ---
-            togglePassword.addEventListener('click', () => { /* ... */ });
-            function setupPopup(button, popup) { /* ... */ }
+            togglePassword.addEventListener('click', () => {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                togglePasswordIcon.classList.toggle('fa-eye');
+                togglePasswordIcon.classList.toggle('fa-eye-slash');
+            });
+
+            function setupPopup(button, popup) {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    // Hide other popups
+                    if(popup !== timeInfoPopup) {
+                        timeInfoPopup.classList.remove('visible');
+                        timeInfoPopup.style.display = 'none'; // Ensure it's hidden for next animation
+                    }
+                    if(popup !== strengthInfoPopup) {
+                        strengthInfoPopup.classList.remove('visible');
+                        strengthInfoPopup.style.display = 'none';
+                    }
+
+                    // Toggle current popup
+                    if (popup.classList.contains('visible')) {
+                        popup.classList.remove('visible');
+                        // Optionally, set display none after animation if it's preferred
+                        // setTimeout(() => { if(!popup.classList.contains('visible')) popup.style.display = 'none'; }, 300);
+                    } else {
+                        popup.style.display = 'block'; // Make it take space
+                        requestAnimationFrame(() => { // Allow display:block to apply
+                            popup.classList.add('visible'); // Trigger animation
+                        });
+                    }
+                });
+            }
             setupPopup(timeInfoBtn, timeInfoPopup);
             setupPopup(strengthInfoBtn, strengthInfoPopup);
-            document.addEventListener('click', () => { /* ... */ });
+
+            document.addEventListener('click', () => {
+                timeInfoPopup.classList.remove('visible');
+                strengthInfoPopup.classList.remove('visible');
+                // Optionally hide after animation for popups
+                // setTimeout(() => {
+                //     if(!timeInfoPopup.classList.contains('visible')) timeInfoPopup.style.display = 'none';
+                //     if(!strengthInfoPopup.classList.contains('visible')) strengthInfoPopup.style.display = 'none';
+                // }, 300);
+            });
             timeInfoPopup.addEventListener('click', e => e.stopPropagation());
             strengthInfoPopup.addEventListener('click', e => e.stopPropagation());
 
