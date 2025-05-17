@@ -285,9 +285,8 @@
             color: var(--text-color);
          }
 
-        /* Info Popups - Pure Fade-in */
+        /* Info Popups - Pure Fade-in/out */
         .info-popup {
-            display: none; /* Initially hidden, JS will set to block before animation */
             position: absolute;
             bottom: 110%;
             left: 25px;
@@ -299,9 +298,10 @@
             z-index: 10;
             width: max-content;
             max-width: 250px;
-            opacity: 0; /* Start with opacity 0 */
+            opacity: 0; /* Start fully transparent */
+            visibility: hidden; /* Start hidden and not taking space */
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            animation: fadeInOnlyPopup 0.3s ease-out forwards; /* Apply fade-in animation */
+            transition: opacity 0.3s ease-out, visibility 0s linear 0.3s; /* Transition opacity, then visibility after opacity aniamtion */
         }
          .info-popup::after {
             content: '';
@@ -313,12 +313,11 @@
             border-color: var(--popup-bg) transparent transparent transparent;
         }
         .info-popup.visible {
-            display: block; /* JS sets this to trigger the animation */
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.3s ease-out, visibility 0s linear 0s; /* Make visible immediately, then fade in opacity */
         }
-        @keyframes fadeInOnlyPopup {
-             from { opacity: 0; }
-            to { opacity: 1; }
-        }
+
 
         /* Color Classes for Strength/Time (6 Steps) */
         .strength-step1 { background-color: var(--color-step1); color: var(--color-text-light); }
@@ -503,7 +502,7 @@
             // --- DOM Element References ---
             const passwordInput = document.getElementById('passwordInput');
             const togglePassword = document.getElementById('togglePassword');
-            const togglePasswordIcon = togglePassword.querySelector('i'); // Make sure this is selected
+            const togglePasswordIcon = togglePassword.querySelector('i');
             const crackTimeElement = document.getElementById('crackTime');
             const passwordStrengthElement = document.getElementById('passwordStrength');
             const lengthCheck = document.getElementById('lengthCheck');
@@ -528,6 +527,7 @@
 
 
             // --- Constants and Data ---
+            // ... (previous constants and data like MINUTE_CONSTANT, rawCrackTimes, etc. remain the same) ...
             const MINUTE_CONSTANT = 60n;
             const HOUR_CONSTANT = MINUTE_CONSTANT * 60n;
             const DAY_CONSTANT = HOUR_CONSTANT * 24n;
@@ -777,34 +777,45 @@
             });
 
             function setupPopup(button, popup) {
+                function closeAllOtherPopups() {
+                    [timeInfoPopup, strengthInfoPopup].forEach(p => {
+                        if (p !== popup && p.classList.contains('visible')) {
+                            p.classList.remove('visible');
+                        }
+                    });
+                }
+
                 button.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    if(popup !== timeInfoPopup) {
-                        timeInfoPopup.classList.remove('visible');
-                    }
-                    if(popup !== strengthInfoPopup) {
-                        strengthInfoPopup.classList.remove('visible');
-                    }
+                    closeAllOtherPopups();
+                    popup.classList.toggle('visible');
+                });
 
-                    if (popup.classList.contains('visible')) {
+                // Close by clicking the popup itself
+                popup.addEventListener('click', (e) => {
+                    if (e.target === popup) { // Only if the click is on the popup background
                         popup.classList.remove('visible');
-                    } else {
-                        popup.style.display = 'block';
-                        requestAnimationFrame(() => {
-                            popup.classList.add('visible');
-                        });
                     }
                 });
             }
+
             setupPopup(timeInfoBtn, timeInfoPopup);
             setupPopup(strengthInfoBtn, strengthInfoPopup);
 
-            document.addEventListener('click', () => {
-                timeInfoPopup.classList.remove('visible');
-                strengthInfoPopup.classList.remove('visible');
+            // Close popups when clicking anywhere else on the document
+            document.addEventListener('click', (e) => {
+                // Check if the click was outside of an info icon and outside of a visible popup's content
+                if (!e.target.closest('.info-icon') && !e.target.closest('.info-popup.visible .info-popup-content')) { // Assuming popup content is wrapped
+                     if (timeInfoPopup.classList.contains('visible')) timeInfoPopup.classList.remove('visible');
+                     if (strengthInfoPopup.classList.contains('visible')) strengthInfoPopup.classList.remove('visible');
+                }
             });
-            timeInfoPopup.addEventListener('click', e => e.stopPropagation());
-            strengthInfoPopup.addEventListener('click', e => e.stopPropagation());
+            // Prevent clicks inside the popup content from closing it via document click
+            // Add a wrapper inside your popup if you don't have one: <div class="info-popup-content">...</div>
+            // For simplicity, if the popup *itself* is the only content wrapper:
+            timeInfoPopup.addEventListener('click', e => { if (e.target !== timeInfoPopup) e.stopPropagation(); });
+            strengthInfoPopup.addEventListener('click', e => { if (e.target !== strengthInfoPopup) e.stopPropagation(); });
+
 
             function setupTableToggle(button, tableContainerElement, allTableContainers) {
                 button.addEventListener('click', () => {
