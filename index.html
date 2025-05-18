@@ -218,23 +218,38 @@
         }
         .info-popup {
             position: absolute;
-            bottom: 110%; left: 25px;
+            bottom: 110%; 
             background-color: var(--popup-bg); color: var(--popup-text);
             padding: 8px 12px; border-radius: 4px; font-size: 0.85rem;
-            z-index: 10; width: max-content; max-width: 250px;
-            opacity: 0; visibility: hidden;
+            z-index: 10; width: max-content; max-width: 320px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            transition: opacity 0.3s ease-out, visibility 0s linear 0.3s;
+            /* Animation */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-out, visibility 0s linear 0.3s; /* 表示時 */
         }
+        .info-popup.visible {
+            opacity: 1;
+            visibility: visible;
+            transition-delay: 0s; /* 表示時はvisibilityの遅延なし */
+        }
+        /* 非表示時は即座にvisibility: hidden */
+        .info-popup:not(.visible) {
+            transition: opacity 0.3s ease-out, visibility 0s linear 0.3s; /* opacityはアニメーション、visibilityは遅延して隠す */
+        }
+
+
+        .info-popup.align-left { left: 25px; }
+        .info-popup.align-right { left: auto; right: 0; }
+
         .info-popup::after {
-            content: ''; position: absolute; top: 100%; left: 15px;
+            content: ''; position: absolute; top: 100%;
             border-width: 5px; border-style: solid;
             border-color: var(--popup-bg) transparent transparent transparent;
         }
-        .info-popup.visible {
-            opacity: 1; visibility: visible;
-            transition: opacity 0.3s ease-out, visibility 0s linear 0s;
-        }
+        .info-popup.align-left::after { left: 15px; }
+        .info-popup.align-right::after { left: auto; right: 15px; }
+
         .strength-step1  { background-color: var(--color-step1);  color: var(--color-text-light); }
         .strength-step2  { background-color: var(--color-step2);  color: var(--color-text-light); }
         .strength-step3  { background-color: var(--color-step3);  color: var(--color-text-dark);  }
@@ -309,14 +324,19 @@
                 <span>パスワード解析時間</span>
                 <span class="info-icon" id="timeInfoBtn" aria-label="解析時間の情報"><i class="fas fa-info-circle"></i></span>
                 <span class="value" id="crackTime">-</span>
-                <div class="info-popup" id="timeInfoPopup">このパスワード解析時間は、あくまで目安です。</div>
+                <div class="info-popup align-left" id="timeInfoPopup">このパスワード解析時間は、パスワードの構成（辞書語、パターン等）と想定される攻撃能力（毎秒1兆回の試行）を考慮した目安です。</div>
             </div>
             <div class="result-item">
                 <span class="icon"><i class="fas fa-shield-alt"></i></span>
                 <span>パスワード強度</span>
                 <span class="info-icon" id="strengthInfoBtn" aria-label="パスワード強度の情報"><i class="fas fa-info-circle"></i></span>
+                <span class="info-icon" id="entropyInfoBtn" aria-label="エントロピーとは？" style="margin-left: 5px;"><i class="fas fa-question-circle"></i></span>
                 <span class="value" id="passwordStrength">-</span>
-                <div class="info-popup" id="strengthInfoPopup">このパスワード強度は、あくまで目安です。</div>
+                <div class="info-popup align-left" id="strengthInfoPopup">パスワードのエントロピー（予測困難性）に基づいた強度レベルの目安です。</div>
+                <div class="info-popup align-right" id="entropyInfoPopup">
+                    <strong>エントロピーとは？</strong><br>
+                    パスワードの予測困難性をビット単位で表す尺度です。数値が高いほど、パスワードは推測されにくく安全とされます。このチェッカーでは、文字種、長さ、辞書語、一般的なパターンなどを考慮して計算しています。
+                </div>
             </div>
         </div>
         <div class="table-toggle-buttons fade-in-element" style="animation-delay: 0.5s;">
@@ -325,6 +345,10 @@
             <button id="toggleStrengthLevelsTableBtn">強度一覧表</button>
         </div>
         <div class="table-container" id="crackTimeTableContainer">
+             <h3 style="text-align:center; margin-bottom:10px; font-weight:500;">パスワード解析時間の目安（文字種別・長さ別）</h3>
+            <p style="font-size:0.8em; text-align:center; margin-bottom:10px; color: var(--secondary-text);">
+                これは単純な文字種と長さのみを考慮した理論値です（毎秒10億回試行と仮定）。実際の強度は上記チェッカーの値をご参照ください。
+            </p>
             <table id="passwordStrengthTable" class="info-table">
                 <thead>
                     <tr>
@@ -360,7 +384,7 @@
             <table id="strengthLevelsTable" class="info-table">
                 <thead>
                     <tr>
-                        <th>強度レベル</th>
+                        <th>強度レベル (エントロピー目安)</th>
                         <th>背景色</th>
                     </tr>
                 </thead>
@@ -384,8 +408,10 @@
             const symbolCheck = document.getElementById('symbolCheck');
             const timeInfoBtn = document.getElementById('timeInfoBtn');
             const strengthInfoBtn = document.getElementById('strengthInfoBtn');
+            const entropyInfoBtn = document.getElementById('entropyInfoBtn');
             const timeInfoPopup = document.getElementById('timeInfoPopup');
             const strengthInfoPopup = document.getElementById('strengthInfoPopup');
+            const entropyInfoPopup = document.getElementById('entropyInfoPopup');
 
             const toggleCrackTimeTableBtn = document.getElementById('toggleCrackTimeTableBtn');
             const crackTimeTableContainer = document.getElementById('crackTimeTableContainer');
@@ -401,160 +427,254 @@
             let previousCrackTimeText = crackTimeElement.textContent;
             let previousPasswordStrengthText = passwordStrengthElement.textContent;
 
-            const charsetSizes = {
-                num: 10n,
-                lower: 26n,
-                upperLower: 52n,
-                numUpperLower: 62n,
-                all: 95n
-            };
-            const ATTEMPTS_PER_SECOND = 1_000_000_000n;
-            const MINUTE = 60n;
-            const HOUR = 60n * MINUTE;
-            const DAY = 24n * HOUR;
-            const YEAR = 365n * DAY;
+            const ATTEMPTS_PER_SECOND_ADVANCED = 1_000_000_000_000n; 
 
-            function getColorClassForTime(minutes) {
-                if (minutes < 0n) return '';
-                if (minutes === 0n) return 'color-step1';
-                const th_step2 = MINUTE;
-                const th_step3 = HOUR * 3n;
-                const th_step4 = DAY * 2n;
-                const th_step5 = DAY * 60n;
-                const th_step6 = YEAR * 50n;
-                const th_step7 = YEAR * 3000n;
-                const th_step8 = YEAR * 2000000n;
-                const th_step9 = YEAR * 10n**12n;
-                if (minutes < th_step2) return 'color-step2';
-                if (minutes < th_step3) return 'color-step3';
-                if (minutes < th_step4) return 'color-step4';
-                if (minutes < th_step5) return 'color-step5';
-                if (minutes < th_step6) return 'color-step6';
-                if (minutes < th_step7) return 'color-step7';
-                if (minutes < th_step8) return 'color-step8';
-                if (minutes < th_step9) return 'color-step9';
-                return 'color-step10';
+            const COMMON_PASSWORDS = [
+                '123456', 'password', '123456789', '12345678', '12345', '111111', '1234567', 'qwerty', 'asdfgh',
+                '123123', 'iloveyou', '000000', 'admin', 'login', 'user', 'test', 'secret', 'p@$$w0rd',
+                'welcome', 'master', 'root', 'guest', 'dragon', 'football', 'shadow', 'monkey', 'sunshine',
+                'princess', 'chocolate', 'summer', 'winter', 'spring', 'google', 'qwertyuiop', 'asdfghjkl',
+                'zxcvbnm', 'superman', 'batman', 'starwars', 'example', 'security', 'computer', 'internet',
+                'pass', 'word', 'code', 'hacker', 'anonymous', 'system', 'program', 'account', 'access',
+                'love', 'sex', 'god', 'jesus', 'michael', 'john', 'david', 'robert', 'daniel', 'james',
+                'jennifer', 'linda', 'mary', 'susan', 'jessica', 'sarah', 'karen', 'lisa', 'ashley',
+                'company', 'service', 'support', 'network', 'online', 'website', 'manager', 'office',
+                'family', 'friend', 'home', 'school', 'hello', 'world', 'test1234', '1234test', 'qwerty1234'
+            ];
+
+            const KEYBOARD_PATTERNS = [
+                'qwertyuiop', 'asdfghjkl', 'zxcvbnm',
+                'qazwsxedcrfvtgbyhnujmikolp',
+                '1234567890',
+                'qwe', 'wer', 'ert', 'rty', 'tyu', 'yui', 'uio', 'iop',
+                'asd', 'sdf', 'dfg', 'fgh', 'ghj', 'hjk', 'jkl',
+                'zxc', 'xcv', 'cvb', 'vbn', 'bnm',
+                'poiuytrewq', 'lkjhgfdsa', 'mnbvcxz',
+                'qaws', 'sxde', 'dcrf', 'fvgt', 'gbYH', 'hNju', 'jmIk', 'kiOl', 'loP',
+            ];
+            const SYMBOL_PATTERNS = ['!@#$%', '^&*()', ')_+', '}{[]'];
+
+            const REGEX_SEQUENCES_ALPHA = /(abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz)/gi;
+            const REGEX_SEQUENCES_NUM = /(012|123|234|345|456|567|678|789)/g;
+            const REGEX_REPEATED_3PLUS = /(.)\1\1+/g;
+            const REGEX_REPEATED_2PLUS = /(.)\1+/g;
+            const REGEX_YEAR = /\b(19\d\d|20\d\d)\b/g;
+
+            function calculateCharacterPoolSize(password) {
+                let pool = 0;
+                let charTypes = 0;
+                if (/[a-z]/.test(password)) { pool += 26; charTypes++; }
+                if (/[A-Z]/.test(password)) { pool += 26; charTypes++; }
+                if (/[0-9]/.test(password)) { pool += 10; charTypes++; }
+                const symbols = password.replace(/[a-zA-Z0-9]/g, '');
+                const uniqueSymbols = new Set(symbols.split('')).size;
+                if (uniqueSymbols > 0) {
+                    pool += Math.min(33, uniqueSymbols * 2);
+                    charTypes++;
+                }
+                return { pool: Math.max(pool, 1), charTypes: charTypes };
+            }
+
+            function calculateBaseEntropy(password) {
+                if (!password) return 0;
+                const { pool } = calculateCharacterPoolSize(password);
+                return password.length * (Math.log(pool) / Math.log(2));
+            }
+
+            function getDictionaryPenalty(password) {
+                let penalty = 0;
+                const lowerPassword = password.toLowerCase();
+                for (const common of COMMON_PASSWORDS) {
+                    if (lowerPassword.includes(common.toLowerCase())) {
+                        penalty += Math.min(25, common.length * 1.5 + (password.length === common.length ? 5: 0) );
+                    }
+                }
+                let leetPassword = lowerPassword
+                    .replace(/0/g, 'o').replace(/3/g, 'e').replace(/@/g, 'a')
+                    .replace(/1/g, 'i').replace(/!/g, 'i').replace(/5/g, 's').replace(/\$/g, 's')
+                    .replace(/7/g, 't');
+                if (leetPassword !== lowerPassword) {
+                     for (const common of COMMON_PASSWORDS) {
+                        if (leetPassword.includes(common.toLowerCase())) {
+                            penalty += Math.min(20, common.length * 1.2);
+                        }
+                    }
+                }
+                return penalty;
+            }
+            
+            function getPatternPenalty(password) {
+                let penalty = 0;
+                const lowerPassword = password.toLowerCase();
+                let match;
+
+                const checkSequence = (regex, basePenalty, targetString) => {
+                    let tempPass = targetString;
+                    regex.lastIndex = 0; 
+                    while ((match = regex.exec(tempPass)) !== null) {
+                        penalty += Math.min(basePenalty, match[0].length * 1.5);
+                        tempPass = tempPass.substring(match.index + 1);
+                        regex.lastIndex = 0;
+                    }
+                };
+                checkSequence(REGEX_SEQUENCES_ALPHA, 10, lowerPassword);
+                checkSequence(REGEX_SEQUENCES_NUM, 8, lowerPassword);
+                
+                const reversedPassword = lowerPassword.split('').reverse().join('');
+                checkSequence(REGEX_SEQUENCES_ALPHA, 10, reversedPassword);
+                checkSequence(REGEX_SEQUENCES_NUM, 8, reversedPassword);
+
+                let tempPassRepeat3 = password;
+                REGEX_REPEATED_3PLUS.lastIndex = 0;
+                while ((match = REGEX_REPEATED_3PLUS.exec(tempPassRepeat3)) !== null) {
+                    penalty += Math.min(10, match[0].length * 2);
+                    tempPassRepeat3 = tempPassRepeat3.substring(match.index + 1);
+                    REGEX_REPEATED_3PLUS.lastIndex = 0;
+                }
+                
+                let tempPassRepeat2 = password;
+                REGEX_REPEATED_2PLUS.lastIndex = 0;
+                while ((match = REGEX_REPEATED_2PLUS.exec(tempPassRepeat2)) !== null) {
+                    if (match[0].length === 2) {
+                         penalty += Math.min(5, match[0].length * 1);
+                    }
+                    tempPassRepeat2 = tempPassRepeat2.substring(match.index + 1);
+                    REGEX_REPEATED_2PLUS.lastIndex = 0;
+                }
+
+                for (const pattern of KEYBOARD_PATTERNS.concat(SYMBOL_PATTERNS)) {
+                    if (lowerPassword.includes(pattern)) {
+                        penalty += Math.min(12, pattern.length * 1.2 + (lowerPassword.length === pattern.length ? 3:0));
+                    }
+                }
+                
+                REGEX_YEAR.lastIndex = 0;
+                if (REGEX_YEAR.test(password)) {
+                    penalty += 5;
+                }
+
+                return penalty;
+            }
+
+            function calculateEffectiveEntropy(password) {
+                if (!password) return 0;
+
+                const baseEntropy = calculateBaseEntropy(password);
+                let totalPenalty = 0;
+
+                if (password.length < 8) totalPenalty += 20;
+                else if (password.length < 10) totalPenalty += 10;
+                else if (password.length < 12) totalPenalty += 5;
+
+                const { charTypes } = calculateCharacterPoolSize(password);
+                if (charTypes === 1 && password.length > 1) totalPenalty += 10;
+                else if (charTypes === 2 && password.length > 3) totalPenalty += 5;
+
+                totalPenalty += getDictionaryPenalty(password);
+                totalPenalty += getPatternPenalty(password);
+                
+                if (/^[a-z]+$/.test(password) && password.length > 4) totalPenalty += 3;
+                if (/^[A-Z]+$/.test(password) && password.length > 4) totalPenalty += 3;
+                if (/^[0-9]+$/.test(password) && password.length > 4) totalPenalty += 3;
+
+                let effectiveEntropy = Math.max(0, baseEntropy - totalPenalty);
+                
+                if (password.length <= 3) {
+                    effectiveEntropy = Math.min(effectiveEntropy, password.length * 4);
+                } else if (password.length <=5) {
+                    effectiveEntropy = Math.min(effectiveEntropy, password.length * 5);
+                }
+                return effectiveEntropy;
+            }
+
+            function calculateAdvancedCrackTimeSeconds(entropy) {
+                if (entropy <= 0.1) return 0n;
+
+                if (entropy > 256) {
+                    return BigInt(10) ** BigInt(100);
+                }
+
+                let combinations;
+                try {
+                    const intEntropy = BigInt(Math.max(1, Math.round(entropy)));
+                    combinations = 2n ** intEntropy;
+                } catch (e) {
+                    return BigInt(10) ** BigInt(100);
+                }
+                
+                if (combinations === 0n && entropy > 0) return 0n;
+
+                const crackTime = combinations / ATTEMPTS_PER_SECOND_ADVANCED;
+                return crackTime < 0n ? 0n : crackTime;
+            }
+            
+            function getStrengthLevelFromEntropy(entropy) {
+                if (entropy < 28) return { text: '危険', step: 1 };
+                if (entropy < 36) return { text: '非常に弱い', step: 2 };
+                if (entropy < 60) return { text: '弱い', step: 3 };
+                if (entropy < 70) return { text: 'やや弱い', step: 4 };
+                if (entropy < 80) return { text: '普通', step: 5 };
+                if (entropy < 90) return { text: 'やや強い', step: 6 };
+                if (entropy < 100) return { text: '強い', step: 7 };
+                if (entropy < 110) return { text: '非常に強い', step: 8 };
+                if (entropy < 128) return { text: '極めて強い', step: 9 };
+                return { text: 'ほぼ解読不能', step: 10 };
             }
 
             const englishNumericUnits = [
-                { power: 3,   name: 'thousand' },
-                { power: 6,   name: 'million' },
-                { power: 9,   name: 'billion' },
-                { power: 12,  name: 'trillion' },
-                { power: 15,  name: 'quadrillion' },
-                { power: 18,  name: 'quintillion' },
-                { power: 21,  name: 'sextillion' },
-                { power: 24,  name: 'septillion' },
-                { power: 27,  name: 'octillion' },
-                { power: 30,  name: 'nonillion' },
-                { power: 33,  name: 'decillion' },
-                { power: 36,  name: 'undecillion' },
-                { power: 39,  name: 'duodecillion' },
-                { power: 42,  name: 'tredecillion' },
-                { power: 45,  name: 'quattuordecillion' },
-                { power: 48,  name: 'quindecillion' },
-                { power: 51,  name: 'sexdecillion' },
-                { power: 54,  name: 'septendecillion' },
-                { power: 57,  name: 'octodecillion' },
-                { power: 60,  name: 'novemdecillion' },
-                { power: 63,  name: 'vigintillion' },
-                { power: 66,  name: 'unvigintillion' },
-                { power: 69,  name: 'duovigintillion' },
-                { power: 72,  name: 'tresvigintillion' },
-                { power: 75,  name: 'quattuorvigintillion' },
-                { power: 78,  name: 'quinquavigintillion' },
-                { power: 81,  name: 'sesvigintillion' },
-                { power: 84,  name: 'septemvigintillion' },
-                { power: 87,  name: 'octovigintillion' },
-                { power: 90,  name: 'novemvigintillion' },
-                { power: 93,  name: 'trigintillion' },
-                { power: 96,  name: 'untrigintillion' },
-                { power: 99,  name: 'duotrigintillion' },
-                { power: 100, name: 'googol' },
-                { power: 102, name: 'trestrigintillion' },
-                { power: 105, name: 'quattuortrigintillion' },
-                { power: 108, name: 'quinquatrigintillion' },
-                { power: 111, name: 'sestrigintillion' },
-                { power: 114, name: 'septentrigintillion' },
-                { power: 117, name: 'octotrigintillion' },
-                { power: 120, name: 'noventrigintillion' },
-                { power: 123, name: 'quadragintillion' },
-                { power: 126, name: 'thousand quadragintillion' },
-                { power: 129, name: 'million quadragintillion' },
-                { power: 132, name: 'billion quadragintillion' },
-                { power: 135, name: 'trillion quadragintillion' },
-                { power: 138, name: 'quadrillion quadragintillion' },
-                { power: 141, name: 'quintillion quadragintillion' },
-                { power: 144, name: 'sextillion quadragintillion' },
-                { power: 147, name: 'septillion quadragintillion' },
-                { power: 150, name: 'octillion quadragintillion' },
-                { power: 153, name: 'quinquagintillion' },
-                { power: 156, name: 'thousand quinquagintillion' },
-                { power: 159, name: 'million quinquagintillion' },
-                { power: 162, name: 'billion quinquagintillion' },
-                { power: 165, name: 'trillion quinquagintillion' },
-                { power: 168, name: 'quadrillion quinquagintillion' },
-                { power: 171, name: 'quintillion quinquagintillion' },
-                { power: 174, name: 'sextillion quinquagintillion' },
-                { power: 177, name: 'septillion quinquagintillion' },
-                { power: 180, name: 'octillion quinquagintillion' },
-                { power: 183, name: 'sexagintillion' },
-                { power: 186, name: 'thousand sexagintillion' },
-                { power: 189, name: 'million sexagintillion' },
-                { power: 192, name: 'billion sexagintillion' },
-                { power: 195, name: 'trillion sexagintillion' },
-                { power: 198, name: 'quadrillion sexagintillion' },
-                { power: 201, name: 'quintillion sexagintillion' },
-                { power: 204, name: 'sextillion sexagintillion' },
-                { power: 207, name: 'septillion sexagintillion' },
-                { power: 210, name: 'octillion sexagintillion' },
-                { power: 213, name: 'septuagintillion' },
-                { power: 216, name: 'thousand septuagintillion' },
-                { power: 219, name: 'million septuagintillion' },
-                { power: 222, name: 'billion septuagintillion' },
-                { power: 225, name: 'trillion septuagintillion' },
-                { power: 228, name: 'quadrillion septuagintillion' },
-                { power: 231, name: 'quintillion septuagintillion' },
-                { power: 234, name: 'sextillion septuagintillion' },
-                { power: 237, name: 'septillion septuagintillion' },
-                { power: 240, name: 'octillion septuagintillion' },
-                { power: 243, name: 'octogintillion' },
-                { power: 246, name: 'thousand octogintillion' },
-                { power: 249, name: 'million octogintillion' },
-                { power: 252, name: 'billion octogintillion' },
-                { power: 255, name: 'trillion octogintillion' },
-                { power: 258, name: 'quadrillion octogintillion' },
-                { power: 261, name: 'quintillion octogintillion' },
-                { power: 264, name: 'sextillion octogintillion' },
-                { power: 267, name: 'septillion octogintillion' },
-                { power: 270, name: 'octillion octogintillion' },
-                { power: 273, name: 'nonagintillion' },
-                { power: 276, name: 'thousand nonagintillion' },
-                { power: 279, name: 'million nonagintillion' },
-                { power: 282, name: 'billion nonagintillion' },
-                { power: 285, name: 'trillion nonagintillion' },
-                { power: 288, name: 'quadrillion nonagintillion' },
-                { power: 291, name: 'quintillion nonagintillion' },
-                { power: 294, name: 'sextillion nonagintillion' },
-                { power: 297, name: 'septillion nonagintillion' },
-                { power: 300, name: 'octillion nonagintillion' },
-                { power: 303, name: 'centillion' },
+                { power: 3,   name: 'thousand' }, { power: 6,   name: 'million' }, { power: 9,   name: 'billion' },
+                { power: 12,  name: 'trillion' }, { power: 15,  name: 'quadrillion' }, { power: 18,  name: 'quintillion' },
+                { power: 21,  name: 'sextillion' }, { power: 24,  name: 'septillion' }, { power: 27,  name: 'octillion' },
+                { power: 30,  name: 'nonillion' }, { power: 33,  name: 'decillion' }, { power: 36,  name: 'undecillion' },
+                { power: 39,  name: 'duodecillion' }, { power: 42,  name: 'tredecillion' }, { power: 45,  name: 'quattuordecillion' },
+                { power: 48,  name: 'quindecillion' }, { power: 51,  name: 'sexdecillion' }, { power: 54,  name: 'septendecillion' },
+                { power: 57,  name: 'octodecillion' }, { power: 60,  name: 'novemdecillion' }, { power: 63,  name: 'vigintillion' },
+                { power: 66,  name: 'unvigintillion' }, { power: 69,  name: 'duovigintillion' }, { power: 72,  name: 'tresvigintillion' },
+                { power: 75,  name: 'quattuorvigintillion' }, { power: 78,  name: 'quinquavigintillion' }, { power: 81,  name: 'sesvigintillion' },
+                { power: 84,  name: 'septemvigintillion' }, { power: 87,  name: 'octovigintillion' }, { power: 90,  name: 'novemvigintillion' },
+                { power: 93,  name: 'trigintillion' }, { power: 96,  name: 'untrigintillion' }, { power: 99,  name: 'duotrigintillion' },
+                { power: 100, name: 'googol' }, { power: 102, name: 'trestrigintillion' }, { power: 105, name: 'quattuortrigintillion' },
+                { power: 108, name: 'quinquatrigintillion' }, { power: 111, name: 'sestrigintillion' }, { power: 114, name: 'septentrigintillion' },
+                { power: 117, name: 'octotrigintillion' }, { power: 120, name: 'noventrigintillion' }, { power: 123, name: 'quadragintillion' },
+                { power: 126, name: 'unquadragintillion' }, { power: 129, name: 'duoquadragintillion' }, { power: 132, name: 'tresquadragintillion' },
+                { power: 135, name: 'quattuorquadragintillion' }, { power: 138, name: 'quinquadragintillion' }, { power: 141, name: 'sexquadragintillion' },
+                { power: 144, name: 'septenquadragintillion' }, { power: 147, name: 'octoquadragintillion' }, { power: 150, name: 'novenquadragintillion' },
+                { power: 153, name: 'quinquagintillion' }, { power: 156, name: 'unquinquagintillion' }, { power: 159, name: 'duoquinquagintillion' },
+                { power: 162, name: 'tresquinquagintillion' }, { power: 165, name: 'quattuorquinquagintillion' }, { power: 168, name: 'quinquinquagintillion' },
+                { power: 171, name: 'sexquinquagintillion' }, { power: 174, name: 'septenquinquagintillion' }, { power: 177, name: 'octoquinquagintillion' },
+                { power: 180, name: 'novenquinquagintillion' }, { power: 183, name: 'sexagintillion' }, { power: 186, name: 'unsexagintillion' },
+                { power: 189, name: 'duosexagintillion' }, { power: 192, name: 'tresexagintillion' }, { power: 195, name: 'quattuorsexagintillion' },
+                { power: 198, name: 'quinsexagintillion' }, { power: 201, name: 'sexsexagintillion' }, { power: 204, name: 'septensexagintillion' },
+                { power: 207, name: 'octosexagintillion' }, { power: 210, name: 'novensexagintillion' }, { power: 213, name: 'septuagintillion' },
+                { power: 216, name: 'unseptuagintillion' }, { power: 219, name: 'duoseptuagintillion' }, { power: 222, name: 'tresseptuagintillion' },
+                { power: 225, name: 'quattuorseptuagintillion' }, { power: 228, name: 'quinseptuagintillion' }, { power: 231, name: 'sexseptuagintillion' },
+                { power: 234, name: 'septenseptuagintillion' }, { power: 237, name: 'octoseptuagintillion' }, { power: 240, name: 'novenseptuagintillion' },
+                { power: 243, name: 'octogintillion' }, { power: 246, name: 'unoctogintillion' }, { power: 249, name: 'duooctogintillion' },
+                { power: 252, name: 'tresoctogintillion' }, { power: 255, name: 'quattuoroctogintillion' }, { power: 258, name: 'quinoctogintillion' },
+                { power: 261, name: 'sexoctogintillion' }, { power: 264, name: 'septenoctogintillion' }, { power: 267, name: 'octooctogintillion' },
+                { power: 270, name: 'novenoctogintillion' }, { power: 273, name: 'nonagintillion' }, { power: 276, name: 'unnonagintillion' },
+                { power: 279, name: 'duononagintillion' }, { power: 282, name: 'tresnonagintillion' }, { power: 285, name: 'quattuornonagintillion' },
+                { power: 288, name: 'quinnonagintillion' }, { power: 291, name: 'sexnonagintillion' }, { power: 294, name: 'septennonagintillion' },
+                { power: 297, name: 'octononagintillion' }, { power: 300, name: 'novennonagintillion' }, { power: 303, name: 'centillion' },
                 { power: 306, name: 'uncentillion' }
             ];
             const UNCENTILLION_POWER = 306;
             const UNCENTILLION_LIMIT = BigInt('999') * (10n ** BigInt(UNCENTILLION_POWER));
 
-            function formatBigNum(num, decimals = 3) {
+            function formatBigNum(num) {
                 if (num < 1000n) return num.toString();
                 let found = null;
-                for (let i = englishNumericUnits.length - 1; i >= 0; --i) {
-                    let p = englishNumericUnits[i].power;
+                const sortedUnits = [...englishNumericUnits].sort((a, b) => b.power - a.power);
+                for (let i = 0; i < sortedUnits.length; ++i) {
+                    let unit = sortedUnits[i];
+                    let p = unit.power;
                     let base = 10n ** BigInt(p);
                     if (num >= base) {
-                        found = englishNumericUnits[i];
+                        found = unit;
                         break;
                     }
                 }
+
                 if (!found) return num.toString();
                 if (found.power === UNCENTILLION_POWER && num > UNCENTILLION_LIMIT) {
                     return 'uncentillion 以上';
@@ -570,51 +690,30 @@
                 if (integerPart < 10) showDecimals = 2;
                 else if (integerPart < 100) showDecimals = 1;
                 else showDecimals = 0;
+
                 if (showDecimals > 0 && remainder > 0n) {
                     let scale = 10n ** BigInt(showDecimals);
-                    let fraction = ((remainder * scale) / divisor);
-                    let fractionStr = fraction.toString().padStart(showDecimals, '0').replace(/0+$/, '');
-                    if (fractionStr.length > 0) decimal = '.' + fractionStr;
+                    let fraction = (remainder * scale) / divisor;
+                    if (fraction > 0n) {
+                        let fractionStr = fraction.toString().padStart(showDecimals, '0');
+                        let significantFraction = fractionStr.replace(/0+$/, '');
+                        if (significantFraction.length > 0) {
+                             decimal = '.' + significantFraction;
+                        }
+                    }
                 }
                 let qStr = quotient.toLocaleString('en');
-                if (showDecimals > 0 && decimal === '.0') decimal = '';
                 return qStr + decimal + ' ' + found.name;
             }
-
-            function minutesToSeconds(minutes) {
-                return minutes * 60n;
-            }
-
+            
             function secondsToEnglishUnit(seconds) {
-                if (seconds < 60n) return '1分未満';
-                if (seconds < 60n * 60n) return (seconds / 60n).toLocaleString('en') + '分';
-                if (seconds < 60n * 60n * 24n) return (seconds / (60n * 60n)).toLocaleString('en') + '時間';
-                if (seconds < 60n * 60n * 24n * 365n) return (seconds / (60n * 60n * 24n)).toLocaleString('en') + '日';
-                let years = seconds / (60n * 60n * 24n * 365n);
+                if (seconds < 1n && seconds >= 0n) return '瞬時';
+                if (seconds < 60n) return (seconds > 1n ? seconds.toLocaleString('en') + '秒' : '1秒');
+                if (seconds < 3600n) return (seconds / 60n).toLocaleString('en') + '分';
+                if (seconds < 86400n) return (seconds / 3600n).toLocaleString('en') + '時間';
+                if (seconds < 31536000n) return (seconds / 86400n).toLocaleString('en') + '日';
+                let years = seconds / 31536000n;
                 return formatBigNum(years) + '年';
-            }
-
-            function getPasswordCategory(password) {
-                const hasUppercase = /[A-Z]/.test(password);
-                const hasLowercase = /[a-z]/.test(password);
-                const hasNumber = /[0-9]/.test(password);
-                const hasSymbol = /[^A-Za-z0-9]/.test(password);
-                if (hasNumber && !hasLowercase && !hasUppercase && !hasSymbol) return 'num';
-                if (hasLowercase && hasUppercase && !hasNumber && !hasSymbol) return 'upperLower';
-                if (hasLowercase && !hasUppercase && !hasNumber && !hasSymbol) return 'lower';
-                if (hasNumber && hasLowercase && hasUppercase && !hasSymbol) return 'numUpperLower';
-                if (hasNumber && hasLowercase && hasUppercase && hasSymbol) return 'all';
-                if (hasNumber && hasLowercase && !hasUppercase && !hasSymbol) return 'numUpperLower';
-                if (hasNumber && hasUppercase && !hasLowercase && !hasSymbol) return 'numUpperLower';
-                if ((hasLowercase || hasUppercase) && hasSymbol && !hasNumber) return 'all';
-                if (hasNumber && hasSymbol && !hasLowercase && !hasUppercase) return 'all';
-                if (hasUppercase && !hasLowercase && !hasNumber && !hasSymbol) return 'upperLower';
-                return 'all';
-            }
-
-            function calcCrackTimeSeconds(charsetSize, length) {
-                if (length < 1) return 0n;
-                return (charsetSize ** BigInt(length)) / ATTEMPTS_PER_SECOND;
             }
 
             function animateValueUpdate(element, newText, newColorClassSuffix) {
@@ -633,45 +732,77 @@
                     element.classList.add('value-updated');
                 }
             }
+
             togglePassword.addEventListener('click', () => {
                 const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
                 passwordInput.setAttribute('type', type);
                 togglePasswordIcon.classList.toggle('fa-eye');
                 togglePasswordIcon.classList.toggle('fa-eye-slash');
             });
+
             function setupPopup(button, popup) {
-                function closeAllOtherPopups() {
-                    [timeInfoPopup, strengthInfoPopup].forEach(p => {
-                        if (p !== popup && p.classList.contains('visible')) p.classList.remove('visible');
+                function closeAllOtherPopups(exceptThisPopup) {
+                    [timeInfoPopup, strengthInfoPopup, entropyInfoPopup].forEach(p => {
+                        if (p !== exceptThisPopup && p.classList.contains('visible')) {
+                            p.classList.remove('visible');
+                        }
                     });
                 }
-                button.addEventListener('click', (e) => { e.stopPropagation(); closeAllOtherPopups(); popup.classList.toggle('visible'); });
-                popup.addEventListener('click', (e) => { if (e.target === popup) popup.classList.remove('visible'); });
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const isCurrentlyVisible = popup.classList.contains('visible');
+                    closeAllOtherPopups(popup); // 他を閉じる (自分自身は除く)
+                    if (!isCurrentlyVisible) {
+                        popup.classList.add('visible');
+                    } else {
+                        popup.classList.remove('visible'); // 再度クリックで閉じる
+                    }
+                });
+                // ポップアップ自体をクリックで閉じる (コンテンツ部分は除く)
+                popup.addEventListener('click', (e) => {
+                    if (e.target === popup) { // 背景部分をクリックした場合のみ
+                        popup.classList.remove('visible');
+                    }
+                });
             }
             setupPopup(timeInfoBtn, timeInfoPopup);
             setupPopup(strengthInfoBtn, strengthInfoPopup);
+            setupPopup(entropyInfoBtn, entropyInfoPopup);
+
             document.addEventListener('click', (e) => {
-                if (!e.target.closest('.info-icon') && !e.target.closest('.info-popup.visible .info-popup-content')) {
-                    if (timeInfoPopup.classList.contains('visible')) timeInfoPopup.classList.remove('visible');
-                    if (strengthInfoPopup.classList.contains('visible')) strengthInfoPopup.classList.remove('visible');
+                // ポップアップの外側をクリックしたら、開いているポップアップをすべて閉じる
+                if (!e.target.closest('.info-icon') && !e.target.closest('.info-popup')) {
+                    [timeInfoPopup, strengthInfoPopup, entropyInfoPopup].forEach(p => {
+                        if (p.classList.contains('visible')) {
+                            p.classList.remove('visible');
+                        }
+                    });
                 }
             });
-            timeInfoPopup.addEventListener('click', e => { if (e.target !== timeInfoPopup) e.stopPropagation(); });
-            strengthInfoPopup.addEventListener('click', e => { if (e.target !== strengthInfoPopup) e.stopPropagation(); });
+            // ポップアップ内のクリックが document のリスナーに伝播しないようにする
+            [timeInfoPopup, strengthInfoPopup, entropyInfoPopup].forEach(popup => {
+                popup.addEventListener('click', e => e.stopPropagation());
+            });
+
+
             function setupTableToggle(button, tableContainerElement, allTableContainers) {
                 button.addEventListener('click', () => {
+                    const isCurrentlyVisible = tableContainerElement.classList.contains('visible');
                     allTableContainers.forEach(tc => { tc.style.display = 'none'; tc.classList.remove('visible'); });
-                    tableContainerElement.style.display = 'block';
-                    setTimeout(() => {
-                        tableContainerElement.classList.add('visible');
-                        tableContainerElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                    }, 10);
+                    if (!isCurrentlyVisible) {
+                        tableContainerElement.style.display = 'block';
+                        setTimeout(() => {
+                            tableContainerElement.classList.add('visible');
+                            tableContainerElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        }, 10);
+                    }
                 });
             }
             const allTableContainers = [crackTimeTableContainer, numericUnitsTableContainer, strengthLevelsTableContainer];
             setupTableToggle(toggleCrackTimeTableBtn, crackTimeTableContainer, allTableContainers);
             setupTableToggle(toggleNumericUnitsTableBtn, numericUnitsTableContainer, allTableContainers);
             setupTableToggle(toggleStrengthLevelsTableBtn, strengthLevelsTableContainer, allTableContainers);
+
             passwordInput.addEventListener('input', evaluatePassword);
 
             function evaluatePassword() {
@@ -681,6 +812,7 @@
                 let newPasswordStrengthText = '-';
                 let strengthColorClassSuffix = '';
                 let barWidthPercent = '0%';
+
                 if (length === 0) {
                     strengthBarIndicator.style.width = '0%';
                     strengthBarIndicator.className = 'strength-bar-indicator';
@@ -693,25 +825,20 @@
                     const hasLowercase = /[a-z]/.test(password);
                     const hasNumber = /[0-9]/.test(password);
                     const hasSymbol = /[^A-Za-z0-9]/.test(password);
-                    const category = getPasswordCategory(password);
-                    let totalSeconds = calcCrackTimeSeconds(charsetSizes[category], length);
-                    let totalMinutes = totalSeconds / 60n;
+
+                    const effectiveEntropy = calculateEffectiveEntropy(password);
+                    const totalSeconds = calculateAdvancedCrackTimeSeconds(effectiveEntropy);
+                    
                     newCrackTimeText = secondsToEnglishUnit(totalSeconds);
-                    const colorClassForTime = getColorClassForTime(totalMinutes);
-                    if (colorClassForTime) {
-                        strengthColorClassSuffix = colorClassForTime.replace('color-', 'strength-');
-                        const levelIndex = parseInt(strengthColorClassSuffix.replace('strength-step', ''), 10) - 1;
-                        if (levelIndex >= 0) {
-                            const levels = [
-                                '危険','非常に弱い','弱い','やや弱い','普通',
-                                'やや強い','強い','非常に強い','極めて強い','ほぼ解読不能'
-                            ];
-                            newPasswordStrengthText = levels[levelIndex] || '-';
-                        }
-                    }
-                    barWidthPercent = strengthColorClassSuffix ? (parseInt(strengthColorClassSuffix.replace('strength-step', ''), 10) * 10) + '%' : '0%';
+                    
+                    const strengthInfo = getStrengthLevelFromEntropy(effectiveEntropy);
+                    newPasswordStrengthText = strengthInfo.text;
+                    strengthColorClassSuffix = 'strength-step' + strengthInfo.step;
+                    barWidthPercent = strengthInfo.step * 10 + '%';
+
                     strengthBarIndicator.style.width = barWidthPercent;
                     strengthBarIndicator.className = 'strength-bar-indicator' + (strengthColorClassSuffix ? ' ' + strengthColorClassSuffix : '');
+
                     lengthCheck.classList.toggle('met', length >= 8);
                     lengthCheck.querySelector('.icon i').className = length >= 8 ? 'fas fa-check' : 'fas fa-times';
                     uppercaseCheck.classList.toggle('met', hasUppercase);
@@ -721,14 +848,47 @@
                     symbolCheck.classList.toggle('met', hasSymbol);
                     symbolCheck.querySelector('.icon i').className = hasSymbol ? 'fas fa-check' : 'fas fa-times';
                 }
+
                 if (previousCrackTimeText !== newCrackTimeText || crackTimeElement.className.indexOf(strengthColorClassSuffix) === -1 || (newCrackTimeText === '-' && crackTimeElement.className !== 'value')) {
                     animateValueUpdate(crackTimeElement, newCrackTimeText, (newCrackTimeText === '-' ? '' : strengthColorClassSuffix));
                 }
                 previousCrackTimeText = newCrackTimeText;
+
                 if (previousPasswordStrengthText !== newPasswordStrengthText || passwordStrengthElement.className.indexOf(strengthColorClassSuffix) === -1 || (newPasswordStrengthText === '-' && passwordStrengthElement.className !== 'value')) {
                     animateValueUpdate(passwordStrengthElement, newPasswordStrengthText, (newPasswordStrengthText === '-' ? '' : strengthColorClassSuffix));
                 }
                 previousPasswordStrengthText = newPasswordStrengthText;
+            }
+
+            const ATTEMPTS_PER_SECOND_TABLE = 1_000_000_000n;
+             const charsetSizesForTable = {
+                num: 10n,
+                lower: 26n,
+                upperLower: 52n,
+                numUpperLower: 62n,
+                all: 95n
+            };
+            function calcCrackTimeSecondsForTable(charsetSize, length) {
+                if (length < 1) return 0n;
+                return (charsetSize ** BigInt(length)) / ATTEMPTS_PER_SECOND_TABLE;
+            }
+            function getColorClassForTimeForTable(seconds) {
+                if (seconds < 0n) return '';
+                if (seconds === 0n) return 'color-step1';
+                const MINUTE = 60n;
+                const HOUR = 60n * MINUTE;
+                const DAY = 24n * HOUR;
+                const YEAR = 365n * DAY;
+
+                if (seconds < MINUTE) return 'color-step2';
+                if (seconds < HOUR * 3n) return 'color-step3';
+                if (seconds < DAY * 2n) return 'color-step4';
+                if (seconds < DAY * 60n) return 'color-step5';
+                if (seconds < YEAR * 50n) return 'color-step6';
+                if (seconds < YEAR * 3000n) return 'color-step7';
+                if (seconds < YEAR * 2000000n) return 'color-step8';
+                if (seconds < YEAR * (10n**12n)) return 'color-step9';
+                return 'color-step10';
             }
 
             function generateCrackTimeTable() {
@@ -736,15 +896,15 @@
                 if (!mainTableBody) return;
                 mainTableBody.innerHTML = '';
                 const categories = ['num', 'lower', 'upperLower', 'numUpperLower', 'all'];
-                for (let len = 4; len <= 100; ++len) {
+                for (let len = 4; len <= 100; ++len) { 
                     const row = mainTableBody.insertRow();
                     row.insertCell().textContent = len;
-                    categories.forEach(cat => {
+                    categories.forEach(catKey => {
                         const cell = row.insertCell();
-                        let sec = calcCrackTimeSeconds(charsetSizes[cat], len);
-                        let min = sec / 60n;
+                        const charsetSize = charsetSizesForTable[catKey];
+                        let sec = calcCrackTimeSecondsForTable(charsetSize, len);
                         cell.textContent = secondsToEnglishUnit(sec);
-                        const colorClass = getColorClassForTime(min);
+                        const colorClass = getColorClassForTimeForTable(sec);
                         if (colorClass) cell.classList.add(colorClass);
                     });
                 }
@@ -753,29 +913,28 @@
             function generateNumericUnitsTable() {
                 if (!numericUnitsTableBody) return;
                 numericUnitsTableBody.innerHTML = '';
-                for (let i = 0; i < englishNumericUnits.length; ++i) {
-                    const unit = englishNumericUnits[i];
+                const sortedUnits = [...englishNumericUnits].sort((a,b) => a.power - b.power);
+                sortedUnits.forEach(unit => {
                     const row = numericUnitsTableBody.insertRow();
                     row.insertCell().textContent = unit.name;
                     row.insertCell().textContent = '10^' + unit.power;
-                }
+                });
             }
 
-            // 強度レベル表（解析時間列なし）
             function generateStrengthLevelsTable() {
                 if (!strengthLevelsTableBody) return;
                 strengthLevelsTableBody.innerHTML = '';
                 const strengthSteps = [
-                    { level: '危険',            color: 'strength-step1'  },
-                    { level: '非常に弱い',      color: 'strength-step2'  },
-                    { level: '弱い',            color: 'strength-step3'  },
-                    { level: 'やや弱い',        color: 'strength-step4'  },
-                    { level: '普通',            color: 'strength-step5'  },
-                    { level: 'やや強い',        color: 'strength-step6'  },
-                    { level: '強い',            color: 'strength-step7'  },
-                    { level: '非常に強い',      color: 'strength-step8'  },
-                    { level: '極めて強い',      color: 'strength-step9'  },
-                    { level: 'ほぼ解読不能',    color: 'strength-step10' }
+                    { level: '危険 (エントロピー <28 bit)', color: 'strength-step1' },
+                    { level: '非常に弱い (28-35 bit)', color: 'strength-step2' },
+                    { level: '弱い (36-59 bit)', color: 'strength-step3' },
+                    { level: 'やや弱い (60-69 bit)', color: 'strength-step4' },
+                    { level: '普通 (70-79 bit)', color: 'strength-step5' },
+                    { level: 'やや強い (80-89 bit)', color: 'strength-step6' },
+                    { level: '強い (90-99 bit)', color: 'strength-step7' },
+                    { level: '非常に強い (100-109 bit)', color: 'strength-step8' },
+                    { level: '極めて強い (110-127 bit)', color: 'strength-step9' },
+                    { level: 'ほぼ解読不能 (≧128 bit)', color: 'strength-step10' }
                 ];
                 for (let i = 0; i < strengthSteps.length; ++i) {
                     const row = strengthLevelsTableBody.insertRow();
@@ -783,7 +942,7 @@
                     const colorCell = row.insertCell();
                     const colorSpan = document.createElement('span');
                     colorSpan.className = `value ${strengthSteps[i].color}`;
-                    colorSpan.style.cssText = 'display: inline-block; width: 20px; height: 20px; border-radius: 3px;';
+                    colorSpan.style.cssText = 'display: inline-block; width: 20px; height: 20px; border-radius: 3px; vertical-align: middle;';
                     colorSpan.textContent = "\u00A0";
                     colorCell.appendChild(colorSpan);
                 }
