@@ -223,22 +223,18 @@
             padding: 8px 12px; border-radius: 4px; font-size: 0.85rem;
             z-index: 10; width: max-content; max-width: 320px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            /* Animation */
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.3s ease-out, visibility 0s linear 0.3s; /* 表示時 */
+            transition: opacity 0.3s ease-out, visibility 0s linear 0.3s;
         }
         .info-popup.visible {
             opacity: 1;
             visibility: visible;
-            transition-delay: 0s; /* 表示時はvisibilityの遅延なし */
+            transition-delay: 0s;
         }
-        /* 非表示時は即座にvisibility: hidden */
         .info-popup:not(.visible) {
-            transition: opacity 0.3s ease-out, visibility 0s linear 0.3s; /* opacityはアニメーション、visibilityは遅延して隠す */
+            transition: opacity 0.3s ease-out, visibility 0s linear 0.3s;
         }
-
-
         .info-popup.align-left { left: 25px; }
         .info-popup.align-right { left: auto; right: 0; }
 
@@ -460,6 +456,8 @@
             const REGEX_REPEATED_2PLUS = /(.)\1+/g;
             const REGEX_YEAR = /\b(19\d\d|20\d\d)\b/g;
 
+            const SECONDS_PER_YEAR = 365n * 24n * 60n * 60n;
+
             function calculateCharacterPoolSize(password) {
                 let pool = 0;
                 let charTypes = 0;
@@ -590,8 +588,10 @@
             function calculateAdvancedCrackTimeSeconds(entropy) {
                 if (entropy <= 0.1) return 0n;
 
-                if (entropy > 256) {
-                    return BigInt(10) ** BigInt(100);
+                const CLIPPING_SECONDS_VALUE = (999n * (10n ** 306n) * SECONDS_PER_YEAR) + 1n; 
+                                                                                          
+                if (entropy > 1090) { 
+                    return CLIPPING_SECONDS_VALUE;
                 }
 
                 let combinations;
@@ -599,12 +599,15 @@
                     const intEntropy = BigInt(Math.max(1, Math.round(entropy)));
                     combinations = 2n ** intEntropy;
                 } catch (e) {
-                    return BigInt(10) ** BigInt(100);
+                    return CLIPPING_SECONDS_VALUE;
                 }
                 
                 if (combinations === 0n && entropy > 0) return 0n;
-
                 const crackTime = combinations / ATTEMPTS_PER_SECOND_ADVANCED;
+                
+                if (crackTime >= CLIPPING_SECONDS_VALUE) {
+                    return CLIPPING_SECONDS_VALUE;
+                }
                 return crackTime < 0n ? 0n : crackTime;
             }
             
@@ -636,52 +639,65 @@
                 { power: 100, name: 'googol' }, { power: 102, name: 'trestrigintillion' }, { power: 105, name: 'quattuortrigintillion' },
                 { power: 108, name: 'quinquatrigintillion' }, { power: 111, name: 'sestrigintillion' }, { power: 114, name: 'septentrigintillion' },
                 { power: 117, name: 'octotrigintillion' }, { power: 120, name: 'noventrigintillion' }, { power: 123, name: 'quadragintillion' },
-                { power: 126, name: 'unquadragintillion' }, { power: 129, name: 'duoquadragintillion' }, { power: 132, name: 'tresquadragintillion' },
-                { power: 135, name: 'quattuorquadragintillion' }, { power: 138, name: 'quinquadragintillion' }, { power: 141, name: 'sexquadragintillion' },
-                { power: 144, name: 'septenquadragintillion' }, { power: 147, name: 'octoquadragintillion' }, { power: 150, name: 'novenquadragintillion' },
-                { power: 153, name: 'quinquagintillion' }, { power: 156, name: 'unquinquagintillion' }, { power: 159, name: 'duoquinquagintillion' },
-                { power: 162, name: 'tresquinquagintillion' }, { power: 165, name: 'quattuorquinquagintillion' }, { power: 168, name: 'quinquinquagintillion' },
-                { power: 171, name: 'sexquinquagintillion' }, { power: 174, name: 'septenquinquagintillion' }, { power: 177, name: 'octoquinquagintillion' },
-                { power: 180, name: 'novenquinquagintillion' }, { power: 183, name: 'sexagintillion' }, { power: 186, name: 'unsexagintillion' },
-                { power: 189, name: 'duosexagintillion' }, { power: 192, name: 'tresexagintillion' }, { power: 195, name: 'quattuorsexagintillion' },
-                { power: 198, name: 'quinsexagintillion' }, { power: 201, name: 'sexsexagintillion' }, { power: 204, name: 'septensexagintillion' },
-                { power: 207, name: 'octosexagintillion' }, { power: 210, name: 'novensexagintillion' }, { power: 213, name: 'septuagintillion' },
-                { power: 216, name: 'unseptuagintillion' }, { power: 219, name: 'duoseptuagintillion' }, { power: 222, name: 'tresseptuagintillion' },
-                { power: 225, name: 'quattuorseptuagintillion' }, { power: 228, name: 'quinseptuagintillion' }, { power: 231, name: 'sexseptuagintillion' },
-                { power: 234, name: 'septenseptuagintillion' }, { power: 237, name: 'octoseptuagintillion' }, { power: 240, name: 'novenseptuagintillion' },
-                { power: 243, name: 'octogintillion' }, { power: 246, name: 'unoctogintillion' }, { power: 249, name: 'duooctogintillion' },
-                { power: 252, name: 'tresoctogintillion' }, { power: 255, name: 'quattuoroctogintillion' }, { power: 258, name: 'quinoctogintillion' },
-                { power: 261, name: 'sexoctogintillion' }, { power: 264, name: 'septenoctogintillion' }, { power: 267, name: 'octooctogintillion' },
-                { power: 270, name: 'novenoctogintillion' }, { power: 273, name: 'nonagintillion' }, { power: 276, name: 'unnonagintillion' },
-                { power: 279, name: 'duononagintillion' }, { power: 282, name: 'tresnonagintillion' }, { power: 285, name: 'quattuornonagintillion' },
-                { power: 288, name: 'quinnonagintillion' }, { power: 291, name: 'sexnonagintillion' }, { power: 294, name: 'septennonagintillion' },
-                { power: 297, name: 'octononagintillion' }, { power: 300, name: 'novennonagintillion' }, { power: 303, name: 'centillion' },
+                { power: 126, name: 'thousand quadragintillion' }, { power: 129, name: 'million quadragintillion' }, { power: 132, name: 'billion quadragintillion' },
+                { power: 135, name: 'trillion quadragintillion' }, { power: 138, name: 'quadrillion quadragintillion' }, { power: 141, name: 'quintillion quadragintillion' },
+                { power: 144, name: 'sextillion quadragintillion' }, { power: 147, name: 'septillion quadragintillion' }, { power: 150, name: 'octillion quadragintillion' },
+                { power: 153, name: 'quinquagintillion' }, { power: 156, name: 'thousand quinquagintillion' }, { power: 159, name: 'million quinquagintillion' },
+                { power: 162, name: 'billion quinquagintillion' }, { power: 165, name: 'trillion quinquagintillion' }, { power: 168, name: 'quadrillion quinquagintillion' },
+                { power: 171, name: 'quintillion quinquagintillion' }, { power: 174, name: 'sextillion quinquagintillion' }, { power: 177, name: 'septillion quinquagintillion' },
+                { power: 180, name: 'octillion quinquagintillion' }, { power: 183, name: 'sexagintillion' }, { power: 186, name: 'thousand sexagintillion' },
+                { power: 189, name: 'million sexagintillion' }, { power: 192, name: 'billion sexagintillion' }, { power: 195, name: 'trillion sexagintillion' },
+                { power: 198, name: 'quadrillion sexagintillion' }, { power: 201, name: 'quintillion sexagintillion' }, { power: 204, name: 'sextillion sexagintillion' },
+                { power: 207, name: 'septillion sexagintillion' }, { power: 210, name: 'octillion sexagintillion' }, { power: 213, name: 'septuagintillion' },
+                { power: 216, name: 'thousand septuagintillion' }, { power: 219, name: 'million septuagintillion' }, { power: 222, name: 'billion septuagintillion' },
+                { power: 225, name: 'trillion septuagintillion' }, { power: 228, name: 'quadrillion septuagintillion' }, { power: 231, name: 'quintillion septuagintillion' },
+                { power: 234, name: 'sextillion septuagintillion' }, { power: 237, name: 'septillion septuagintillion' }, { power: 240, name: 'octillion septuagintillion' },
+                { power: 243, name: 'octogintillion' }, { power: 246, name: 'thousand octogintillion' }, { power: 249, name: 'million octogintillion' },
+                { power: 252, name: 'billion octogintillion' }, { power: 255, name: 'trillion octogintillion' }, { power: 258, name: 'quadrillion octogintillion' },
+                { power: 261, name: 'quintillion octogintillion' }, { power: 264, name: 'sextillion octogintillion' }, { power: 267, name: 'septillion octogintillion' },
+                { power: 270, name: 'octillion octogintillion' }, { power: 273, name: 'nonagintillion' }, { power: 276, name: 'thousand nonagintillion' },
+                { power: 279, name: 'million nonagintillion' }, { power: 282, name: 'billion nonagintillion' }, { power: 285, name: 'trillion nonagintillion' },
+                { power: 288, name: 'quadrillion nonagintillion' }, { power: 291, name: 'quintillion nonagintillion' }, { power: 294, name: 'sextillion nonagintillion' },
+                { power: 297, name: 'septillion nonagintillion' }, { power: 300, name: 'octillion nonagintillion' }, { power: 303, name: 'centillion' },
                 { power: 306, name: 'uncentillion' }
             ];
-            const UNCENTILLION_POWER = 306;
-            const UNCENTILLION_LIMIT = BigInt('999') * (10n ** BigInt(UNCENTILLION_POWER));
 
-            function formatBigNum(num) {
-                if (num < 1000n) return num.toString();
+            const UNCENTILLION_POWER = 306;
+            const MAX_DISPLAYABLE_UNCENTILLION_YEARS = 999n * (10n ** BigInt(UNCENTILLION_POWER));
+            const MAX_DISPLAYABLE_UNCENTILLION_SECONDS = MAX_DISPLAYABLE_UNCENTILLION_YEARS * SECONDS_PER_YEAR;
+
+
+            function formatBigNum(numYears) { // numYears is in years
+                // This function now expects to format numbers *up to* MAX_DISPLAYABLE_UNCENTILLION_YEARS.
+                // The "以上" (or more) logic is handled by secondsToEnglishUnit.
+                if (numYears < 1000n) return numYears.toString();
+
                 let found = null;
                 const sortedUnits = [...englishNumericUnits].sort((a, b) => b.power - a.power);
                 for (let i = 0; i < sortedUnits.length; ++i) {
                     let unit = sortedUnits[i];
                     let p = unit.power;
                     let base = 10n ** BigInt(p);
-                    if (num >= base) {
+                    if (numYears >= base) {
                         found = unit;
                         break;
                     }
                 }
 
-                if (!found) return num.toString();
-                if (found.power === UNCENTILLION_POWER && num > UNCENTILLION_LIMIT) {
-                    return 'uncentillion 以上';
+                if (!found) return numYears.toString();
+
+                // Special handling for "uncentillion" if it's the exact unit.
+                // If numYears is, for example, 500 uncentillion, it should show "500 uncentillion".
+                if (found.name === 'uncentillion' && numYears >= (10n ** BigInt(UNCENTILLION_POWER))) {
+                     let quotient = numYears / (10n ** BigInt(UNCENTILLION_POWER));
+                     // No decimals for uncentillion display here for simplicity if it's a direct multiple.
+                     return `${quotient.toLocaleString('en')} uncentillion`;
                 }
+
+
                 let divisor = 10n ** BigInt(found.power);
-                let quotient = num / divisor;
-                let remainder = num % divisor;
+                let quotient = numYears / divisor;
+                let remainder = numYears % divisor;
                 let decimal = '';
 
                 let quotientStr = quotient.toString();
@@ -707,13 +723,17 @@
             }
             
             function secondsToEnglishUnit(seconds) {
+                if (seconds >= MAX_DISPLAYABLE_UNCENTILLION_SECONDS) {
+                    return 'uncentillion 年以上'; // 修正: "以上" の前にスペースなし
+                }
                 if (seconds < 1n && seconds >= 0n) return '瞬時';
-                if (seconds < 60n) return (seconds > 1n ? seconds.toLocaleString('en') + '秒' : '1秒');
-                if (seconds < 3600n) return (seconds / 60n).toLocaleString('en') + '分';
-                if (seconds < 86400n) return (seconds / 3600n).toLocaleString('en') + '時間';
-                if (seconds < 31536000n) return (seconds / 86400n).toLocaleString('en') + '日';
-                let years = seconds / 31536000n;
-                return formatBigNum(years) + '年';
+                if (seconds < 60n) return (seconds > 1n ? seconds.toLocaleString('en') + ' 秒' : '1 秒');
+                if (seconds < 3600n) return (seconds / 60n).toLocaleString('en') + ' 分';
+                if (seconds < 86400n) return (seconds / 3600n).toLocaleString('en') + ' 時間';
+                if (seconds < SECONDS_PER_YEAR) return (seconds / 86400n).toLocaleString('en') + ' 日';
+                
+                let years = seconds / SECONDS_PER_YEAR;
+                return formatBigNum(years) + ' 年';
             }
 
             function animateValueUpdate(element, newText, newColorClassSuffix) {
@@ -751,16 +771,15 @@
                 button.addEventListener('click', (e) => {
                     e.stopPropagation();
                     const isCurrentlyVisible = popup.classList.contains('visible');
-                    closeAllOtherPopups(popup); // 他を閉じる (自分自身は除く)
+                    closeAllOtherPopups(popup);
                     if (!isCurrentlyVisible) {
                         popup.classList.add('visible');
                     } else {
-                        popup.classList.remove('visible'); // 再度クリックで閉じる
+                        popup.classList.remove('visible');
                     }
                 });
-                // ポップアップ自体をクリックで閉じる (コンテンツ部分は除く)
                 popup.addEventListener('click', (e) => {
-                    if (e.target === popup) { // 背景部分をクリックした場合のみ
+                    if (e.target === popup) {
                         popup.classList.remove('visible');
                     }
                 });
@@ -770,7 +789,6 @@
             setupPopup(entropyInfoBtn, entropyInfoPopup);
 
             document.addEventListener('click', (e) => {
-                // ポップアップの外側をクリックしたら、開いているポップアップをすべて閉じる
                 if (!e.target.closest('.info-icon') && !e.target.closest('.info-popup')) {
                     [timeInfoPopup, strengthInfoPopup, entropyInfoPopup].forEach(p => {
                         if (p.classList.contains('visible')) {
@@ -779,7 +797,6 @@
                     });
                 }
             });
-            // ポップアップ内のクリックが document のリスナーに伝播しないようにする
             [timeInfoPopup, strengthInfoPopup, entropyInfoPopup].forEach(popup => {
                 popup.addEventListener('click', e => e.stopPropagation());
             });
@@ -868,17 +885,37 @@
                 numUpperLower: 62n,
                 all: 95n
             };
+            const TABLE_CLIPPING_SECONDS_VALUE = MAX_DISPLAYABLE_UNCENTILLION_SECONDS + 1n; 
+
             function calcCrackTimeSecondsForTable(charsetSize, length) {
                 if (length < 1) return 0n;
-                return (charsetSize ** BigInt(length)) / ATTEMPTS_PER_SECOND_TABLE;
+                
+                const baseEntropy = length * (Math.log(Number(charsetSize)) / Math.log(2));
+                if (baseEntropy > 1070) { 
+                    return TABLE_CLIPPING_SECONDS_VALUE;
+                }
+
+                try {
+                    let combinations = charsetSize ** BigInt(length);
+                    let crackTime = combinations / ATTEMPTS_PER_SECOND_TABLE;
+                    if (crackTime >= TABLE_CLIPPING_SECONDS_VALUE) {
+                        return TABLE_CLIPPING_SECONDS_VALUE;
+                    }
+                    return crackTime;
+                } catch (e) {
+                    return TABLE_CLIPPING_SECONDS_VALUE; 
+                }
             }
+
             function getColorClassForTimeForTable(seconds) {
+                if (seconds >= MAX_DISPLAYABLE_UNCENTILLION_SECONDS) return 'color-step10';
+
                 if (seconds < 0n) return '';
                 if (seconds === 0n) return 'color-step1';
                 const MINUTE = 60n;
                 const HOUR = 60n * MINUTE;
                 const DAY = 24n * HOUR;
-                const YEAR = 365n * DAY;
+                const YEAR = SECONDS_PER_YEAR;
 
                 if (seconds < MINUTE) return 'color-step2';
                 if (seconds < HOUR * 3n) return 'color-step3';
@@ -886,7 +923,7 @@
                 if (seconds < DAY * 60n) return 'color-step5';
                 if (seconds < YEAR * 50n) return 'color-step6';
                 if (seconds < YEAR * 3000n) return 'color-step7';
-                if (seconds < YEAR * 2000000n) return 'color-step8';
+                if (seconds < YEAR * 2000000n) return 'color-step8'; 
                 if (seconds < YEAR * (10n**12n)) return 'color-step9';
                 return 'color-step10';
             }
@@ -896,7 +933,7 @@
                 if (!mainTableBody) return;
                 mainTableBody.innerHTML = '';
                 const categories = ['num', 'lower', 'upperLower', 'numUpperLower', 'all'];
-                for (let len = 4; len <= 100; ++len) { 
+                for (let len = 4; len <= 323; ++len) { 
                     const row = mainTableBody.insertRow();
                     row.insertCell().textContent = len;
                     categories.forEach(catKey => {
