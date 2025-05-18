@@ -194,7 +194,7 @@
             align-items: center;
             margin-bottom: 15px;
             font-size: 1rem;
-            position: relative;
+            position: relative; /* ポップアップの基準点 */
         }
         .result-item .icon {
             color: var(--icon-color);
@@ -203,7 +203,7 @@
             width: 20px;
             text-align: center;
         }
-        .result-item .info-icon {
+        .result-item .info-icon { /* result-item内のinfo-icon */
             color: var(--icon-color);
             font-size: 0.9em;
             margin-left: 8px;
@@ -216,35 +216,114 @@
             border-radius: 4px;
             color: var(--text-color);
         }
+
+        .table-toggle-buttons {
+            display: flex; flex-wrap: wrap; gap: 10px;
+            margin-top: 20px; margin-bottom: 10px;
+            align-items: center;
+        }
+        .table-toggle-buttons > div { /* 各ボタンとアイコンのコンテナを relative に */
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .table-toggle-buttons button {
+            background-color: var(--input-bg); color: var(--secondary-text);
+            border: 1px solid var(--input-border); padding: 8px 15px;
+            border-radius: 4px; cursor: pointer; font-size: 0.9rem;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+            position: relative; /* アイコンを内部に配置するための基準 */
+        }
+        .table-toggle-buttons button:hover { background-color: var(--input-border); }
+
+        /* ボタン内の情報アイコン */
+        .table-toggle-buttons button .info-icon {
+            position: absolute;
+            right: 8px; /* ボタン右端からの位置 */
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--icon-color);
+            font-size: 0.9em; /* result-item内のものと合わせる */
+            cursor: pointer;
+            padding: 2px; /* クリック範囲を少し広げる */
+        }
+        /* アイコン分のパディングをボタンに追加 */
+        #toggleCrackTimeTableBtn {
+            padding-right: 30px !important; /* アイコンスペース確保 */
+        }
+
+
         .info-popup {
             position: absolute;
-            bottom: 110%; 
             background-color: var(--popup-bg); color: var(--popup-text);
-            padding: 8px 12px; border-radius: 4px; font-size: 0.85rem;
-            z-index: 10; width: max-content; max-width: 320px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            padding: 10px 15px; border-radius: 6px; font-size: 0.88rem;
+            z-index: 10; width: max-content; max-width: 380px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.25);
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.3s ease-out, visibility 0s linear 0.3s;
+            transition: opacity 0.25s ease-out, visibility 0s linear 0.25s;
         }
+        .info-popup strong {
+            font-weight: 500;
+            color: var(--link-color);
+             display: block; margin-bottom: 5px;
+        }
+        @media (prefers-color-scheme: dark) {
+            .info-popup strong {
+                color: var(--link-color);
+            }
+        }
+        .info-popup ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+        .info-popup li {
+            margin-bottom: 3px;
+        }
+
         .info-popup.visible {
             opacity: 1;
             visibility: visible;
             transition-delay: 0s;
         }
         .info-popup:not(.visible) {
-            transition: opacity 0.3s ease-out, visibility 0s linear 0.3s;
+            transition: opacity 0.25s ease-out, visibility 0s linear 0.25s;
         }
-        .info-popup.align-left { left: 25px; }
-        .info-popup.align-right { left: auto; right: 0; }
+        
+        .info-popup.align-left { left: 0; }
+        .info-popup.align-right { right: 0; } /* result-item用 */
+        /* table-toggle-buttons内のポップアップはボタンの左端に合わせるのを基本とする */
+        .table-toggle-buttons .info-popup {
+            left:0; /* ボタンの左端から開始 */
+        }
+
+
+        .info-popup.popup-above { bottom: calc(100% + 8px); } /* ボタンの上に表示、少し間隔 */
+        .info-popup.popup-below { top: calc(100% + 8px); }   /* ボタンの下に表示、少し間隔 */
+
 
         .info-popup::after {
-            content: ''; position: absolute; top: 100%;
-            border-width: 5px; border-style: solid;
+            content: ''; position: absolute;
+            border-width: 6px; border-style: solid;
+        }
+        .info-popup.popup-below.align-left::after,
+        .table-toggle-buttons .info-popup.popup-below::after { /* table-toggle-buttons用 */
+            bottom: 100%; left: 15px;
+            border-color: transparent transparent var(--popup-bg) transparent;
+        }
+         .info-popup.popup-above.align-left::after,
+         .table-toggle-buttons .info-popup.popup-above::after { /* table-toggle-buttons用 */
+            top: 100%; left: 15px;
             border-color: var(--popup-bg) transparent transparent transparent;
         }
-        .info-popup.align-left::after { left: 15px; }
-        .info-popup.align-right::after { left: auto; right: 15px; }
+        .info-popup.popup-above.align-right::after { /* result-item用 */
+            top: 100%; right: 15px;
+            border-color: var(--popup-bg) transparent transparent transparent;
+        }
+
 
         .strength-step1  { background-color: var(--color-step1);  color: var(--color-text-light); }
         .strength-step2  { background-color: var(--color-step2);  color: var(--color-text-light); }
@@ -256,17 +335,7 @@
         .strength-step8  { background-color: var(--color-step8);  color: var(--color-text-light); }
         .strength-step9  { background-color: var(--color-step9);  color: var(--color-text-light); }
         .strength-step10 { background-color: var(--color-step10); color: var(--color-text-light); }
-        .table-toggle-buttons {
-            display: flex; flex-wrap: wrap; gap: 10px;
-            margin-top: 20px; margin-bottom: 10px;
-        }
-        .table-toggle-buttons button {
-            background-color: var(--input-bg); color: var(--secondary-text);
-            border: 1px solid var(--input-border); padding: 8px 15px;
-            border-radius: 4px; cursor: pointer; font-size: 0.9rem;
-            transition: background-color 0.2s ease, border-color 0.2s ease;
-        }
-        .table-toggle-buttons button:hover { background-color: var(--input-border); }
+        
         .table-container {
             display: none; opacity: 0; margin-top: 10px;
             width: 100%; overflow-x: auto;
@@ -320,7 +389,16 @@
                 <span>パスワード解析時間</span>
                 <span class="info-icon" id="timeInfoBtn" aria-label="解析時間の情報"><i class="fas fa-info-circle"></i></span>
                 <span class="value" id="crackTime">-</span>
-                <div class="info-popup align-left" id="timeInfoPopup">このパスワード解析時間は、パスワードの構成（辞書語、パターン等）と想定される攻撃能力（毎秒1兆回の試行）を考慮した目安です。</div>
+                <div class="info-popup align-left popup-above" id="timeInfoPopup">
+                    <strong>パスワード解析時間について</strong>
+                    入力されたパスワードを解読するのに要する時間の目安です。<br>
+                    <strong style="margin-top:8px;">計算の前提:</strong>
+                    <ul>
+                        <li>パスワードの実際の構成 (長さ、文字種、辞書語、繰り返し、キーボードパターン等) を評価します。</li>
+                        <li>攻撃速度は、強力なものを想定し、**毎秒1兆回 (10<sup>12</sup>回)** の試行を仮定しています。</li>
+                    </ul>
+                    この時間は、下の「パスワード解析時間の目安表」とは計算の前提が異なります。目安表は理想的なランダム性を仮定した理論値です。
+                </div>
             </div>
             <div class="result-item">
                 <span class="icon"><i class="fas fa-shield-alt"></i></span>
@@ -328,23 +406,56 @@
                 <span class="info-icon" id="strengthInfoBtn" aria-label="パスワード強度の情報"><i class="fas fa-info-circle"></i></span>
                 <span class="info-icon" id="entropyInfoBtn" aria-label="エントロピーとは？" style="margin-left: 5px;"><i class="fas fa-question-circle"></i></span>
                 <span class="value" id="passwordStrength">-</span>
-                <div class="info-popup align-left" id="strengthInfoPopup">パスワードのエントロピー（予測困難性）に基づいた強度レベルの目安です。</div>
-                <div class="info-popup align-right" id="entropyInfoPopup">
+                <div class="info-popup align-left popup-above" id="strengthInfoPopup">
+                    <strong>パスワード強度について</strong><br>
+                    この強度は、上記の「パスワード解析時間」と連動しています。「パスワード解析時間」は、以下の要素を考慮して計算された、より現実的な目安です：<br>
+                    - パスワードの長さ、文字種（大文字、小文字、数字、記号）<br>
+                    - 辞書に載っている単語や一般的な名前の使用<br>
+                    - キーボードの並び（例: "qwerty"）や連続・繰り返し文字（例: "abc", "111"）<br>
+                    - 一般的な日付パターン<br>
+                    上記を基に実効エントロピーを算出し、強力な攻撃（毎秒1兆回の試行を仮定）で破られるまでの時間から強度を判定しています。
+                </div>
+                <div class="info-popup align-right popup-above" id="entropyInfoPopup">
                     <strong>エントロピーとは？</strong><br>
-                    パスワードの予測困難性をビット単位で表す尺度です。数値が高いほど、パスワードは推測されにくく安全とされます。このチェッカーでは、文字種、長さ、辞書語、一般的なパターンなどを考慮して計算しています。
+                    パスワードの「予測困難性」または「ランダム性」をビット単位で表す尺度です。数値が高いほど、パスワードを推測するのが難しくなります。<br>
+                    <strong style="margin-top:8px;">計算の考慮事項:</strong>
+                    <ul>
+                        <li>基本的な文字種（大文字、小文字、数字、記号）とパスワードの長さ。</li>
+                        <li>辞書に載っている単語や一般的な名前、日付の使用による減点。</li>
+                        <li>キーボードの並び（"qwerty"等）や連続・繰り返し文字（"abc", "111"等）による減点。</li>
+                    </ul>
+                    これらの要素を総合的に評価し、実効的なエントロピーを算出しています。
                 </div>
             </div>
         </div>
         <div class="table-toggle-buttons fade-in-element" style="animation-delay: 0.5s;">
-            <button id="toggleCrackTimeTableBtn">パスワード解析時間の目安表</button>
-            <button id="toggleNumericUnitsTableBtn">英語の数値単位一覧表</button>
-            <button id="toggleStrengthLevelsTableBtn">強度一覧表</button>
+            <div> <!-- ボタンと情報アイコンのコンテナ -->
+                <button id="toggleCrackTimeTableBtn">
+                    パスワード解析時間の目安表
+                    <span class="info-icon" id="crackTimeTableInfoBtn" aria-label="目安表の情報"><i class="fas fa-info-circle"></i></span>
+                </button>
+                <div class="info-popup align-left popup-below" id="crackTimeTableInfoPopup"> <!-- popup-belowを追加 -->
+                    <strong>パスワード解析時間の目安表について</strong>
+                    この表は、指定された文字種のみを使用し、完全にランダムな文字列でパスワードを作成した場合の、理論的な解析時間を示します。<br>
+                    <strong style="margin-top:8px;">計算の前提:</strong>
+                    <ul>
+                        <li>攻撃者はパスワードに使用されている文字種を知っていると仮定します。</li>
+                        <li>パスワードは完全にランダムであり、辞書語、名前、キーボードパターンなどの予測可能な要素を含まないものとします。</li>
+                        <li>攻撃速度は、**毎秒10億回 (10<sup>9</sup>回)** の試行を仮定しています。</li>
+                    </ul>
+                    これはあくまで理論上の理想的な強度であり、実際のパスワードが持つ可能性のある弱点（辞書語の使用など）は考慮されていません。<br>
+                    あなたの入力したパスワードのより現実的な強度については、ページ上部の「パスワード解析時間」をご参照ください。そちらは、パスワードの具体的な内容と、より強力な攻撃（毎秒1兆回試行）を考慮して計算されています。
+                </div>
+            </div>
+            <div>
+                <button id="toggleNumericUnitsTableBtn">英語の数値単位一覧表</button>
+            </div>
+            <div>
+                <button id="toggleStrengthLevelsTableBtn">強度一覧表</button>
+            </div>
         </div>
         <div class="table-container" id="crackTimeTableContainer">
              <h3 style="text-align:center; margin-bottom:10px; font-weight:500;">パスワード解析時間の目安（文字種別・長さ別）</h3>
-            <p style="font-size:0.8em; text-align:center; margin-bottom:10px; color: var(--secondary-text);">
-                これは単純な文字種と長さのみを考慮した理論値です（毎秒10億回試行と仮定）。実際の強度は上記チェッカーの値をご参照ください。
-            </p>
             <table id="passwordStrengthTable" class="info-table">
                 <thead>
                     <tr>
@@ -405,9 +516,12 @@
             const timeInfoBtn = document.getElementById('timeInfoBtn');
             const strengthInfoBtn = document.getElementById('strengthInfoBtn');
             const entropyInfoBtn = document.getElementById('entropyInfoBtn');
+            const crackTimeTableInfoBtn = document.getElementById('crackTimeTableInfoBtn'); 
+
             const timeInfoPopup = document.getElementById('timeInfoPopup');
             const strengthInfoPopup = document.getElementById('strengthInfoPopup');
             const entropyInfoPopup = document.getElementById('entropyInfoPopup');
+            const crackTimeTableInfoPopup = document.getElementById('crackTimeTableInfoPopup');
 
             const toggleCrackTimeTableBtn = document.getElementById('toggleCrackTimeTableBtn');
             const crackTimeTableContainer = document.getElementById('crackTimeTableContainer');
@@ -667,9 +781,7 @@
             const MAX_DISPLAYABLE_UNCENTILLION_SECONDS = MAX_DISPLAYABLE_UNCENTILLION_YEARS * SECONDS_PER_YEAR;
 
 
-            function formatBigNum(numYears) { // numYears is in years
-                // This function now expects to format numbers *up to* MAX_DISPLAYABLE_UNCENTILLION_YEARS.
-                // The "以上" (or more) logic is handled by secondsToEnglishUnit.
+            function formatBigNum(numYears) { 
                 if (numYears < 1000n) return numYears.toString();
 
                 let found = null;
@@ -685,21 +797,16 @@
                 }
 
                 if (!found) return numYears.toString();
+                
+                let divisor = 10n ** BigInt(found.power);
+                let quotient = numYears / divisor;
 
-                // Special handling for "uncentillion" if it's the exact unit.
-                // If numYears is, for example, 500 uncentillion, it should show "500 uncentillion".
                 if (found.name === 'uncentillion' && numYears >= (10n ** BigInt(UNCENTILLION_POWER))) {
-                     let quotient = numYears / (10n ** BigInt(UNCENTILLION_POWER));
-                     // No decimals for uncentillion display here for simplicity if it's a direct multiple.
                      return `${quotient.toLocaleString('en')} uncentillion`;
                 }
 
-
-                let divisor = 10n ** BigInt(found.power);
-                let quotient = numYears / divisor;
                 let remainder = numYears % divisor;
                 let decimal = '';
-
                 let quotientStr = quotient.toString();
                 let integerPart = parseInt(quotientStr, 10);
                 let showDecimals = 0;
@@ -724,7 +831,7 @@
             
             function secondsToEnglishUnit(seconds) {
                 if (seconds >= MAX_DISPLAYABLE_UNCENTILLION_SECONDS) {
-                    return 'uncentillion 年以上'; // 修正: "以上" の前にスペースなし
+                    return 'uncentillion 年以上';
                 }
                 if (seconds < 1n && seconds >= 0n) return '瞬時';
                 if (seconds < 60n) return (seconds > 1n ? seconds.toLocaleString('en') + ' 秒' : '1 秒');
@@ -762,7 +869,7 @@
 
             function setupPopup(button, popup) {
                 function closeAllOtherPopups(exceptThisPopup) {
-                    [timeInfoPopup, strengthInfoPopup, entropyInfoPopup].forEach(p => {
+                    [timeInfoPopup, strengthInfoPopup, entropyInfoPopup, crackTimeTableInfoPopup].forEach(p => {
                         if (p !== exceptThisPopup && p.classList.contains('visible')) {
                             p.classList.remove('visible');
                         }
@@ -779,7 +886,7 @@
                     }
                 });
                 popup.addEventListener('click', (e) => {
-                    if (e.target === popup) {
+                    if (e.target === popup) { // ポップアップの背景クリック
                         popup.classList.remove('visible');
                     }
                 });
@@ -787,23 +894,34 @@
             setupPopup(timeInfoBtn, timeInfoPopup);
             setupPopup(strengthInfoBtn, strengthInfoPopup);
             setupPopup(entropyInfoBtn, entropyInfoPopup);
+            setupPopup(crackTimeTableInfoBtn, crackTimeTableInfoPopup);
 
             document.addEventListener('click', (e) => {
                 if (!e.target.closest('.info-icon') && !e.target.closest('.info-popup')) {
-                    [timeInfoPopup, strengthInfoPopup, entropyInfoPopup].forEach(p => {
+                    [timeInfoPopup, strengthInfoPopup, entropyInfoPopup, crackTimeTableInfoPopup].forEach(p => {
                         if (p.classList.contains('visible')) {
                             p.classList.remove('visible');
                         }
                     });
                 }
             });
-            [timeInfoPopup, strengthInfoPopup, entropyInfoPopup].forEach(popup => {
-                popup.addEventListener('click', e => e.stopPropagation());
+            [timeInfoPopup, strengthInfoPopup, entropyInfoPopup, crackTimeTableInfoPopup].forEach(popup => {
+                popup.addEventListener('click', e => {
+                    // ポップアップ内のコンテンツクリックでポップアップが閉じないようにする
+                    // ただし、背景クリックの場合は setupPopup 内のリスナーで閉じる
+                    if (e.target !== popup) {
+                         e.stopPropagation();
+                    }
+                });
             });
 
 
             function setupTableToggle(button, tableContainerElement, allTableContainers) {
-                button.addEventListener('click', () => {
+                button.addEventListener('click', (e) => {
+                    // 情報アイコンがクリックされた場合は、テーブルのトグルを実行しない
+                    if (e.target.closest('.info-icon')) {
+                        return;
+                    }
                     const isCurrentlyVisible = tableContainerElement.classList.contains('visible');
                     allTableContainers.forEach(tc => { tc.style.display = 'none'; tc.classList.remove('visible'); });
                     if (!isCurrentlyVisible) {
@@ -933,7 +1051,7 @@
                 if (!mainTableBody) return;
                 mainTableBody.innerHTML = '';
                 const categories = ['num', 'lower', 'upperLower', 'numUpperLower', 'all'];
-                for (let len = 4; len <= 323; ++len) { 
+                for (let len = 4; len <= 100; ++len) { 
                     const row = mainTableBody.insertRow();
                     row.insertCell().textContent = len;
                     categories.forEach(catKey => {
