@@ -362,7 +362,6 @@
                     <tr>
                         <th>強度レベル</th>
                         <th>背景色</th>
-                        <th>おおよその解析時間</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -437,7 +436,6 @@
                 return 'color-step10';
             }
 
-            // 英語の数値単位
             const englishNumericUnits = [
                 { power: 3,   name: 'thousand' },
                 { power: 6,   name: 'million' },
@@ -704,7 +702,6 @@
                         strengthColorClassSuffix = colorClassForTime.replace('color-', 'strength-');
                         const levelIndex = parseInt(strengthColorClassSuffix.replace('strength-step', ''), 10) - 1;
                         if (levelIndex >= 0) {
-                            // Assign a level name if defined
                             const levels = [
                                 '危険','非常に弱い','弱い','やや弱い','普通',
                                 'やや強い','強い','非常に強い','極めて強い','ほぼ解読不能'
@@ -764,52 +761,31 @@
                 }
             }
 
-            // 強度レベル表の「おおよその解析時間」英語単位バージョン
+            // 強度レベル表（解析時間列なし）
             function generateStrengthLevelsTable() {
                 if (!strengthLevelsTableBody) return;
                 strengthLevelsTableBody.innerHTML = '';
-                // 秒数で下限値・上限値を定義
-                const ranges = [
-                    [0n, 60n], // less than 1 minute
-                    [60n, HOUR * 3n], // 1分～3時間
-                    [HOUR * 3n, DAY * 2n], // 3時間～2日
-                    [DAY * 2n, DAY * 60n], // 2日～60日
-                    [DAY * 60n, YEAR * 50n], // 60日～50年
-                    [YEAR * 50n, YEAR * 3000n], // 50年～3000年
-                    [YEAR * 3000n, YEAR * 2000000n], // 3000年～200万年
-                    [YEAR * 2000000n, YEAR * 10n**12n], // 200万年～1兆年
-                    [YEAR * 10n**12n, YEAR * 10n**20n], // 1兆年～10^20年
-                    [YEAR * 10n**20n, YEAR * 10n**306n] // 10^20年～uncentillion年
+                const strengthSteps = [
+                    { level: '危険',            color: 'strength-step1'  },
+                    { level: '非常に弱い',      color: 'strength-step2'  },
+                    { level: '弱い',            color: 'strength-step3'  },
+                    { level: 'やや弱い',        color: 'strength-step4'  },
+                    { level: '普通',            color: 'strength-step5'  },
+                    { level: 'やや強い',        color: 'strength-step6'  },
+                    { level: '強い',            color: 'strength-step7'  },
+                    { level: '非常に強い',      color: 'strength-step8'  },
+                    { level: '極めて強い',      color: 'strength-step9'  },
+                    { level: 'ほぼ解読不能',    color: 'strength-step10' }
                 ];
-                const levelNames = [
-                    '危険','非常に弱い','弱い','やや弱い','普通',
-                    'やや強い','強い','非常に強い','極めて強い','ほぼ解読不能'
-                ];
-                const colorClasses = [
-                    'strength-step1','strength-step2','strength-step3','strength-step4','strength-step5',
-                    'strength-step6','strength-step7','strength-step8','strength-step9','strength-step10'
-                ];
-                for (let i = 0; i < levelNames.length; ++i) {
+                for (let i = 0; i < strengthSteps.length; ++i) {
                     const row = strengthLevelsTableBody.insertRow();
-                    row.insertCell().textContent = levelNames[i];
+                    row.insertCell().textContent = strengthSteps[i].level;
                     const colorCell = row.insertCell();
                     const colorSpan = document.createElement('span');
-                    colorSpan.className = `value ${colorClasses[i]}`;
+                    colorSpan.className = `value ${strengthSteps[i].color}`;
                     colorSpan.style.cssText = 'display: inline-block; width: 20px; height: 20px; border-radius: 3px;';
                     colorSpan.textContent = "\u00A0";
                     colorCell.appendChild(colorSpan);
-
-                    let displayText = '';
-                    if (i < ranges.length) {
-                        let lower = ranges[i][0], upper = ranges[i][1];
-                        if (lower === 0n) displayText = 'less than 1 minute';
-                        else {
-                            let lowerText = secondsToEnglishUnit(lower);
-                            let upperText = secondsToEnglishUnit(upper);
-                            displayText = lowerText + ' ～ ' + upperText;
-                        }
-                    }
-                    row.insertCell().textContent = displayText;
                 }
             }
 
