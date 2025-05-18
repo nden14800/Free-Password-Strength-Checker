@@ -10,9 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap" rel="stylesheet">
     <!-- Font Awesome CDN for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <!-- MathJax V3 Script REMOVED -->
     <style>
-        /* General Styles & Theme Variables */
         :root {
             --bg-color: #ffffff;
             --text-color: #202124;
@@ -27,8 +25,6 @@
             --table-header-bg: #e8eaed;
             --table-border: #dadce0;
             --link-color: #1a73e8;
-
-            /* Color Scale (10 Steps) */
             --color-step1: #ff0000;
             --color-step2: #ff4500;
             --color-step3: #ff8c00;
@@ -39,11 +35,9 @@
             --color-step8: #1e90ff;
             --color-step9: #4169e1;
             --color-step10: #7f00ff;
-
             --color-text-light: #ffffff;
             --color-text-dark: #202124;
         }
-
         @media (prefers-color-scheme: dark) {
             :root {
                 --bg-color: #202124;
@@ -62,15 +56,12 @@
                 --color-text-dark: #202124;
             }
         }
-
-        /* Base styles */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
             font-family: 'Roboto', sans-serif;
         }
-
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
@@ -83,7 +74,6 @@
             animation: mainFadeIn 0.6s ease-out forwards;
         }
         @keyframes mainFadeIn { from { opacity: 0; } to { opacity: 1; } }
-
         .container {
             max-width: 700px;
             width: 100%;
@@ -91,25 +81,15 @@
             padding: 25px;
             border-radius: 8px;
         }
-
         h1 {
             text-align: center;
             margin-bottom: 30px;
             color: var(--text-color);
             font-weight: 500;
         }
-
-        .fade-in-element {
-             opacity: 0;
-             animation: elementFadeIn 0.5s ease-out forwards;
-        }
+        .fade-in-element { opacity: 0; animation: elementFadeIn 0.5s ease-out forwards; }
         @keyframes elementFadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .password-wrapper {
-            position: relative;
-            margin-bottom: 10px;
-        }
-
+        .password-wrapper { position: relative; margin-bottom: 10px; }
         #passwordInput {
             width: 100%;
             padding: 12px 40px 12px 15px;
@@ -137,7 +117,6 @@
             font-size: 1.2em;
             padding: 5px;
         }
-
         .strength-bar-container {
             width: 100%;
             height: 6px;
@@ -153,7 +132,6 @@
             border-radius: 3px;
             transition: width 0.4s ease-out, background-color 0.4s ease-out;
         }
-
         .privacy-notice {
             display: flex;
             align-items: center;
@@ -173,7 +151,6 @@
             margin-right: 8px;
             font-size: 0.7em;
         }
-
         .criteria {
             list-style: none;
             padding: 0;
@@ -207,7 +184,6 @@
             color: var(--color-text-light);
             border-color: #69b371;
         }
-
         .results-section {
             margin-top: 20px;
             padding-top: 20px;
@@ -221,11 +197,11 @@
             position: relative;
         }
         .result-item .icon {
-             color: var(--icon-color);
-             font-size: 1.2em;
-             margin-right: 10px;
-             width: 20px;
-             text-align: center;
+            color: var(--icon-color);
+            font-size: 1.2em;
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
         }
         .result-item .info-icon {
             color: var(--icon-color);
@@ -239,8 +215,7 @@
             padding: 3px 8px;
             border-radius: 4px;
             color: var(--text-color);
-         }
-
+        }
         .info-popup {
             position: absolute;
             bottom: 110%; left: 25px;
@@ -260,7 +235,6 @@
             opacity: 1; visibility: visible;
             transition: opacity 0.3s ease-out, visibility 0s linear 0s;
         }
-
         .strength-step1  { background-color: var(--color-step1);  color: var(--color-text-light); }
         .strength-step2  { background-color: var(--color-step2);  color: var(--color-text-light); }
         .strength-step3  { background-color: var(--color-step3);  color: var(--color-text-dark);  }
@@ -271,7 +245,6 @@
         .strength-step8  { background-color: var(--color-step8);  color: var(--color-text-light); }
         .strength-step9  { background-color: var(--color-step9);  color: var(--color-text-light); }
         .strength-step10 { background-color: var(--color-step10); color: var(--color-text-light); }
-
         .table-toggle-buttons {
             display: flex; flex-wrap: wrap; gap: 10px;
             margin-top: 20px; margin-bottom: 10px;
@@ -283,20 +256,17 @@
             transition: background-color 0.2s ease, border-color 0.2s ease;
         }
         .table-toggle-buttons button:hover { background-color: var(--input-border); }
-
         .table-container {
             display: none; opacity: 0; margin-top: 10px;
             width: 100%; overflow-x: auto;
             transition: opacity 0.5s ease-out;
         }
         .table-container.visible { display: block; opacity: 1; }
-
         .info-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 300px; }
         .info-table th, .info-table td { border: 1px solid var(--table-border); padding: 8px 10px; text-align: left; }
         .info-table th { background-color: var(--table-header-bg); font-weight: 500; }
         #passwordStrengthTable th, #passwordStrengthTable td { text-align: center; }
         #passwordStrengthTable td:first-child { font-weight: 500; background-color: var(--table-header-bg); }
-
         #passwordStrengthTable td.color-step1  { background-color: var(--color-step1);  color: var(--color-text-light); }
         #passwordStrengthTable td.color-step2  { background-color: var(--color-step2);  color: var(--color-text-light); }
         #passwordStrengthTable td.color-step3  { background-color: var(--color-step3);  color: var(--color-text-dark);  }
@@ -307,7 +277,6 @@
         #passwordStrengthTable td.color-step8  { background-color: var(--color-step8);  color: var(--color-text-light); }
         #passwordStrengthTable td.color-step9  { background-color: var(--color-step9);  color: var(--color-text-light); }
         #passwordStrengthTable td.color-step10 { background-color: var(--color-step10); color: var(--color-text-light); }
-
         .result-item .value.value-updated { animation: valueFadeIn 0.3s ease-out; }
         @keyframes valueFadeIn { from { opacity: 0.3; } to { opacity: 1; } }
     </style>
@@ -315,30 +284,25 @@
 <body>
     <div class="container">
         <h1 class="fade-in-element" style="animation-delay: 0s;">無料パスワード強度チェッカー</h1>
-
         <div class="password-wrapper fade-in-element" style="animation-delay: 0.1s;">
             <input type="password" id="passwordInput" placeholder="パスワードを入力してください">
             <button id="togglePassword" aria-label="パスワードを表示/非表示">
                 <i class="fas fa-eye"></i>
             </button>
         </div>
-
         <div class="strength-bar-container fade-in-element" style="animation-delay: 0.15s;">
             <div class="strength-bar-indicator" id="strengthBarIndicator"></div>
         </div>
-
         <div class="privacy-notice fade-in-element" style="animation-delay: 0.2s;">
             <span class="icon"><i class="fas fa-check"></i></span>
             <span>パスワードはサーバーに送られません。ご安心ください。</span>
         </div>
-
         <div class="criteria fade-in-element" style="animation-delay: 0.3s;">
             <div class="criterion" id="lengthCheck"><span class="icon"><i class="fas fa-times"></i></span><span>8文字以上</span></div>
             <div class="criterion" id="uppercaseCheck"><span class="icon"><i class="fas fa-times"></i></span><span>大文字を含む</span></div>
             <div class="criterion" id="numberCheck"><span class="icon"><i class="fas fa-times"></i></span><span>数字を含む</span></div>
             <div class="criterion" id="symbolCheck"><span class="icon"><i class="fas fa-times"></i></span><span>記号を含む</span></div>
         </div>
-
         <div class="results-section fade-in-element" style="animation-delay: 0.4s;">
             <div class="result-item">
                 <span class="icon"><i class="fas fa-clock"></i></span>
@@ -350,19 +314,16 @@
             <div class="result-item">
                 <span class="icon"><i class="fas fa-shield-alt"></i></span>
                 <span>パスワード強度</span>
-                 <span class="info-icon" id="strengthInfoBtn" aria-label="パスワード強度の情報"><i class="fas fa-info-circle"></i></span>
+                <span class="info-icon" id="strengthInfoBtn" aria-label="パスワード強度の情報"><i class="fas fa-info-circle"></i></span>
                 <span class="value" id="passwordStrength">-</span>
-                 <div class="info-popup" id="strengthInfoPopup">このパスワード強度は、あくまで目安です。</div>
+                <div class="info-popup" id="strengthInfoPopup">このパスワード強度は、あくまで目安です。</div>
             </div>
         </div>
-
         <div class="table-toggle-buttons fade-in-element" style="animation-delay: 0.5s;">
             <button id="toggleCrackTimeTableBtn">パスワード解析時間の目安表</button>
-            <button id="toggleNumericUnitsTableBtn">数字の単位一覧表</button>
+            <button id="toggleNumericUnitsTableBtn">英語の数値単位一覧表</button>
             <button id="toggleStrengthLevelsTableBtn">強度一覧表</button>
         </div>
-
-
         <div class="table-container" id="crackTimeTableContainer">
             <table id="passwordStrengthTable" class="info-table">
                 <thead>
@@ -380,14 +341,12 @@
                 </tbody>
             </table>
         </div>
-
         <div class="table-container" id="numericUnitsTableContainer">
-             <h3 style="text-align:center; margin-bottom:10px; font-weight:500;">大きな数字の単位</h3>
+            <h3 style="text-align:center; margin-bottom:10px; font-weight:500;">英語の数値単位</h3>
             <table id="numericUnitsTable" class="info-table">
                 <thead>
                     <tr>
                         <th>単位</th>
-                        <th>読み方（参考）</th>
                         <th>10の何乗</th>
                     </tr>
                 </thead>
@@ -396,7 +355,6 @@
                 </tbody>
             </table>
         </div>
-
         <div class="table-container" id="strengthLevelsTableContainer">
             <h3 style="text-align:center; margin-bottom:10px; font-weight:500;">パスワード強度レベルの目安</h3>
             <table id="strengthLevelsTable" class="info-table">
@@ -413,10 +371,8 @@
             </table>
         </div>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // --- DOM Element References ---
             const passwordInput = document.getElementById('passwordInput');
             const togglePassword = document.getElementById('togglePassword');
             const togglePasswordIcon = togglePassword.querySelector('i');
@@ -446,258 +402,245 @@
             let previousCrackTimeText = crackTimeElement.textContent;
             let previousPasswordStrengthText = passwordStrengthElement.textContent;
 
-            const MINUTE_CONSTANT = 60n;
-            const HOUR_CONSTANT = MINUTE_CONSTANT * 60n;
-            const DAY_CONSTANT = HOUR_CONSTANT * 24n;
-            const WEEK_CONSTANT = DAY_CONSTANT * 7n;
-            const MONTH_CONSTANT = DAY_CONSTANT * 30n;
-            const YEAR_CONSTANT = DAY_CONSTANT * 365n;
-            const MURYOUTAISUU_UNIT_YEARS = 10n**68n;
-            const MURYOUTAISUU_YEARS_IN_MINUTES = YEAR_CONSTANT * MURYOUTAISUU_UNIT_YEARS;
-            const DISPLAY_CAP_THRESHOLD_MINUTES = MURYOUTAISUU_YEARS_IN_MINUTES * 9999n;
-            const DISPLAY_CAP_STRING = "9,999無量大数年以上";
-
-
-            const rawCrackTimes = {
-                 4: { num: 'i', lower: 'i', upperLower: 'i', numUpperLower: 'i', all: 'i' },
-                 5: { num: 'i', lower: 'i', upperLower: '57m', numUpperLower: '2h', all: '4h' },
-                 6: { num: 'i', lower: '46m', upperLower: '2d', numUpperLower: '6d', all: '2w' },
-                 7: { num: 'i', lower: '20h', upperLower: '4M', numUpperLower: '1y', all: '2y' },
-                 8: { num: 'i', lower: '3w', upperLower: '15y', numUpperLower: '62y', all: '164y' },
-                 9: { num: '2h', lower: '2y', upperLower: '791y', numUpperLower: '3ky', all: '11ky' },
-                10: { num: '1d', lower: '40y', upperLower: '41ky', numUpperLower: '238ky', all: '803ky' },
-                11: { num: '1w', lower: '1ky', upperLower: '2My', numUpperLower: '14My', all: '56My' },
-                12: { num: '3M', lower: '27ky', upperLower: '111My', numUpperLower: '917My', all: '3by' },
-                13: { num: '3y', lower: '705ky', upperLower: '5by', numUpperLower: '56by', all: '275by' },
-                14: { num: '28y', lower: '18My', upperLower: '300by', numUpperLower: '3ty', all: '19ty' },
-                15: { num: '284y', lower: '477My', upperLower: '15ty', numUpperLower: '218ty', all: '1qdy' },
-                16: { num: '2ky', lower: '12by', upperLower: '812ty', numUpperLower: '13qdy', all: '94qdy' },
-                17: { num: '28ky', lower: '322by', upperLower: '42qdy', numUpperLower: '840qdy', all: '6qny' },
-                18: { num: '284ky', lower: '8ty', upperLower: '2qny', numUpperLower: '52qny', all: '463qny' }
+            const charsetSizes = {
+                num: 10n,
+                lower: 26n,
+                upperLower: 52n,
+                numUpperLower: 62n,
+                all: 95n
             };
+            const ATTEMPTS_PER_SECOND = 1_000_000_000n;
+            const MINUTE = 60n;
+            const HOUR = 60n * MINUTE;
+            const DAY = 24n * HOUR;
+            const YEAR = 365n * DAY;
 
-            const unitMultipliers = {
-                'm': 1n, 'h': HOUR_CONSTANT, 'd': DAY_CONSTANT, 'w': WEEK_CONSTANT, 'M': MONTH_CONSTANT,
-                'y': YEAR_CONSTANT, 'ky': YEAR_CONSTANT * 1000n, 'My': YEAR_CONSTANT * 1000000n,
-                'by': YEAR_CONSTANT * 1000000000n, 'ty': YEAR_CONSTANT * 10n**12n,
-                'qdy': YEAR_CONSTANT * 10n**15n, 'qny': YEAR_CONSTANT * 10n**18n
-            };
-             const largeNumericUnits = [
-                { name: '垓', yomikata: 'がい', power: 20 }, { name: '𥝱', yomikata: 'じょ (秭:し)', power: 24 },
-                { name: '穣', yomikata: 'じょう', power: 28 }, { name: '溝', yomikata: 'こう', power: 32 },
-                { name: '澗', yomikata: 'かん', power: 36 }, { name: '正', yomikata: 'せい', power: 40 },
-                { name: '載', yomikata: 'さい', power: 44 }, { name: '極', yomikata: 'ごく', power: 48 },
-                { name: '恒河沙', yomikata: 'ごうがしゃ', power: 52 }, { name: '阿僧祇', yomikata: 'あそうぎ', power: 56 },
-                { name: '那由他', yomikata: 'なゆた', power: 60 }, { name: '不可思議', yomikata: 'ふかしぎ', power: 64 },
-                { name: '無量大数', yomikata: 'むりょうたいすう', power: 68 }
-            ];
-
-            const japaneseUnits = [
-                { name: '無量大数年', threshold: MURYOUTAISUU_YEARS_IN_MINUTES, power: 68n },
-                { name: '不可思議年', threshold: YEAR_CONSTANT * 10n**64n, power: 64n },
-                { name: '那由他年', threshold: YEAR_CONSTANT * 10n**60n, power: 60n },
-                { name: '阿僧祇年', threshold: YEAR_CONSTANT * 10n**56n, power: 56n },
-                { name: '恒河沙年', threshold: YEAR_CONSTANT * 10n**52n, power: 52n },
-                { name: '極年', threshold: YEAR_CONSTANT * 10n**48n, power: 48n },
-                { name: '載年', threshold: YEAR_CONSTANT * 10n**44n, power: 44n },
-                { name: '正年', threshold: YEAR_CONSTANT * 10n**40n, power: 40n },
-                { name: '澗年', threshold: YEAR_CONSTANT * 10n**36n, power: 36n },
-                { name: '溝年', threshold: YEAR_CONSTANT * 10n**32n, power: 32n },
-                { name: '穣年', threshold: YEAR_CONSTANT * 10n**28n, power: 28n },
-                { name: '𥝱年', threshold: YEAR_CONSTANT * 10n**24n, power: 24n },
-                { name: '垓年', threshold: YEAR_CONSTANT * 10n**20n, power: 20n },
-                { name: '京年', threshold: YEAR_CONSTANT * 10n**16n, power: 16n },
-                { name: '兆年', threshold: YEAR_CONSTANT * 10n**12n, power: 12n },
-                { name: '億年', threshold: YEAR_CONSTANT * 10n**8n, power: 8n },
-                { name: '万年', threshold: YEAR_CONSTANT * 10n**4n, power: 4n },
-                { name: '年', threshold: YEAR_CONSTANT, power: 0n },
-                { name: 'ヶ月', threshold: MONTH_CONSTANT }, { name: '週間', threshold: WEEK_CONSTANT },
-                { name: '日', threshold: DAY_CONSTANT }, { name: '時間', threshold: HOUR_CONSTANT },
-                { name: '分', threshold: MINUTE_CONSTANT }
-            ];
-
-            const charsetSizes = { num: 10n, lower: 26n, upperLower: 52n, numUpperLower: 62n, all: 94n };
-
-            const strengthLevelData = [
-                { level: '危険', colorClass: 'strength-step1', timeRange: '瞬時' },
-                { level: '非常に弱い', colorClass: 'strength-step2', timeRange: '1分未満' },
-                { level: '弱い', colorClass: 'strength-step3', timeRange: '数分～数時間' },
-                { level: 'やや弱い', colorClass: 'strength-step4', timeRange: '数時間～数日' },
-                { level: '普通', colorClass: 'strength-step5', timeRange: '数日～数ヶ月' },
-                { level: 'やや強い', colorClass: 'strength-step6', timeRange: '数ヶ月～数十年' },
-                { level: '強い', colorClass: 'strength-step7', timeRange: '数十年～数千年' },
-                { level: '非常に強い', colorClass: 'strength-step8', timeRange: '数千年～数百万年' },
-                { level: '極めて強い', colorClass: 'strength-step9', timeRange: '数百万年～数兆年' },
-                { level: 'ほぼ解読不能', colorClass: 'strength-step10', timeRange: '数兆年以上' }
-            ];
-
-            function formatBigIntWithPrecision(valueBigInt, divisorBigInt, unitPower) {
-                if (divisorBigInt === 0n) return "エラー";
-                const integerPartOfUnit = valueBigInt / divisorBigInt;
-
-                if (unitPower !== undefined && unitPower >= 68n) {
-                     try { return (integerPartOfUnit <= BigInt(Number.MAX_SAFE_INTEGER)) ? Number(integerPartOfUnit).toLocaleString() : integerPartOfUnit.toString(); }
-                     catch(e) { return integerPartOfUnit.toString(); }
-                }
-
-                let fractionDigits = 0;
-                if (unitPower !== undefined && unitPower >= 4n) {
-                    if (integerPartOfUnit < 10n) fractionDigits = 2;
-                    else if (integerPartOfUnit < 100n) fractionDigits = 1;
-                    else fractionDigits = 0;
-                }
-
-                if (fractionDigits === 0) {
-                    try { return (integerPartOfUnit <= BigInt(Number.MAX_SAFE_INTEGER)) ? Number(integerPartOfUnit).toLocaleString() : integerPartOfUnit.toString(); }
-                    catch(e) { return integerPartOfUnit.toString(); }
-                }
-
-                const scale = 10n ** BigInt(fractionDigits);
-                const scaledValueForRounding = (valueBigInt * scale * 10n) / divisorBigInt;
-                const roundedScaledValue = (scaledValueForRounding + 5n) / 10n;
-
-                const finalIntegerPart = roundedScaledValue / scale;
-                const finalDecimalPart = roundedScaledValue % scale;
-
-                let numStr = "";
-                try { numStr = (finalIntegerPart <= BigInt(Number.MAX_SAFE_INTEGER)) ? Number(finalIntegerPart).toLocaleString() : finalIntegerPart.toString(); }
-                catch(e) { numStr = finalIntegerPart.toString(); }
-
-                const decimalStr = finalDecimalPart.toString().padStart(fractionDigits, '0');
-                return `${numStr}.${decimalStr}`;
-            }
-
-
-            function minutesToJapaneseTime(totalMinutesBigInt) {
-                if (totalMinutesBigInt === 0n) return '瞬時';
-                if (totalMinutesBigInt < 0n) return 'エラー';
-
-                if (totalMinutesBigInt >= DISPLAY_CAP_THRESHOLD_MINUTES) {
-                    return DISPLAY_CAP_STRING;
-                }
-
-                if (totalMinutesBigInt < MINUTE_CONSTANT) return '1分未満';
-
-                for (const unit of japaneseUnits) {
-                    if (totalMinutesBigInt >= unit.threshold) {
-                        let displayValueStr = formatBigIntWithPrecision(totalMinutesBigInt, unit.threshold, unit.power);
-                        if (unit.name === '年' && unit.power === 0n && (totalMinutesBigInt / YEAR_CONSTANT) >= 10000n) {
-                             const manUnit = japaneseUnits.find(u => u.name === '万年' && u.power === 4n);
-                             if (manUnit) {
-                                 displayValueStr = formatBigIntWithPrecision(totalMinutesBigInt, manUnit.threshold, manUnit.power);
-                                 return `${displayValueStr}${manUnit.name}`;
-                             }
-                        }
-                        return `${displayValueStr}${unit.name}`;
-                    }
-                }
-                 try { return `${(totalMinutesBigInt <= BigInt(Number.MAX_SAFE_INTEGER)) ? Number(totalMinutesBigInt).toLocaleString() : totalMinutesBigInt.toString()}分`; }
-                 catch(e) { return `${totalMinutesBigInt.toString()}分`; }
-            }
-
-            function parseRawTimeToMinutes(rawTime) {
-                if (rawTime === 'i') return 0n;
-                const match = rawTime.match(/^(\d+)([a-zA-Z]+)$/);
-                if (!match) return -1n;
-                try {
-                    const number = BigInt(match[1]);
-                    const multiplier = unitMultipliers[match[2]];
-                    return multiplier ? number * multiplier : -1n;
-                } catch (e) { return -1n; }
-            }
-
-            function getColorClassForTime(totalMinutesBigInt) {
-                if (totalMinutesBigInt < 0n) return '';
-                if (totalMinutesBigInt === 0n) return 'color-step1';
-                const th_step2 = MINUTE_CONSTANT;
-                const th_step3 = HOUR_CONSTANT * 3n;
-                const th_step4 = DAY_CONSTANT * 2n;
-                const th_step5 = MONTH_CONSTANT * 2n;
-                const th_step6 = YEAR_CONSTANT * 50n;
-                const th_step7 = YEAR_CONSTANT * 3000n;
-                const th_step8 = YEAR_CONSTANT * 2000000n;
-                const th_step9 = YEAR_CONSTANT * 10n**12n;
-                if (totalMinutesBigInt < th_step2) return 'color-step2';
-                if (totalMinutesBigInt < th_step3) return 'color-step3';
-                if (totalMinutesBigInt < th_step4) return 'color-step4';
-                if (totalMinutesBigInt < th_step5) return 'color-step5';
-                if (totalMinutesBigInt < th_step6) return 'color-step6';
-                if (totalMinutesBigInt < th_step7) return 'color-step7';
-                if (totalMinutesBigInt < th_step8) return 'color-step8';
-                if (totalMinutesBigInt < th_step9) return 'color-step9';
+            function getColorClassForTime(minutes) {
+                if (minutes < 0n) return '';
+                if (minutes === 0n) return 'color-step1';
+                const th_step2 = MINUTE;
+                const th_step3 = HOUR * 3n;
+                const th_step4 = DAY * 2n;
+                const th_step5 = DAY * 60n;
+                const th_step6 = YEAR * 50n;
+                const th_step7 = YEAR * 3000n;
+                const th_step8 = YEAR * 2000000n;
+                const th_step9 = YEAR * 10n**12n;
+                if (minutes < th_step2) return 'color-step2';
+                if (minutes < th_step3) return 'color-step3';
+                if (minutes < th_step4) return 'color-step4';
+                if (minutes < th_step5) return 'color-step5';
+                if (minutes < th_step6) return 'color-step6';
+                if (minutes < th_step7) return 'color-step7';
+                if (minutes < th_step8) return 'color-step8';
+                if (minutes < th_step9) return 'color-step9';
                 return 'color-step10';
             }
 
-            function getStrengthBarWidth(colorClassSuffix) {
-                if (!colorClassSuffix) return '0%';
-                const stepNumber = parseInt(colorClassSuffix.replace('strength-step', ''), 10);
-                if (isNaN(stepNumber) || stepNumber < 1 || stepNumber > 10) return '0%';
-                return `${stepNumber * 10}%`;
-            }
+            // 英語の数値単位
+            const englishNumericUnits = [
+                { power: 3,   name: 'thousand' },
+                { power: 6,   name: 'million' },
+                { power: 9,   name: 'billion' },
+                { power: 12,  name: 'trillion' },
+                { power: 15,  name: 'quadrillion' },
+                { power: 18,  name: 'quintillion' },
+                { power: 21,  name: 'sextillion' },
+                { power: 24,  name: 'septillion' },
+                { power: 27,  name: 'octillion' },
+                { power: 30,  name: 'nonillion' },
+                { power: 33,  name: 'decillion' },
+                { power: 36,  name: 'undecillion' },
+                { power: 39,  name: 'duodecillion' },
+                { power: 42,  name: 'tredecillion' },
+                { power: 45,  name: 'quattuordecillion' },
+                { power: 48,  name: 'quindecillion' },
+                { power: 51,  name: 'sexdecillion' },
+                { power: 54,  name: 'septendecillion' },
+                { power: 57,  name: 'octodecillion' },
+                { power: 60,  name: 'novemdecillion' },
+                { power: 63,  name: 'vigintillion' },
+                { power: 66,  name: 'unvigintillion' },
+                { power: 69,  name: 'duovigintillion' },
+                { power: 72,  name: 'tresvigintillion' },
+                { power: 75,  name: 'quattuorvigintillion' },
+                { power: 78,  name: 'quinquavigintillion' },
+                { power: 81,  name: 'sesvigintillion' },
+                { power: 84,  name: 'septemvigintillion' },
+                { power: 87,  name: 'octovigintillion' },
+                { power: 90,  name: 'novemvigintillion' },
+                { power: 93,  name: 'trigintillion' },
+                { power: 96,  name: 'untrigintillion' },
+                { power: 99,  name: 'duotrigintillion' },
+                { power: 100, name: 'googol' },
+                { power: 102, name: 'trestrigintillion' },
+                { power: 105, name: 'quattuortrigintillion' },
+                { power: 108, name: 'quinquatrigintillion' },
+                { power: 111, name: 'sestrigintillion' },
+                { power: 114, name: 'septentrigintillion' },
+                { power: 117, name: 'octotrigintillion' },
+                { power: 120, name: 'noventrigintillion' },
+                { power: 123, name: 'quadragintillion' },
+                { power: 126, name: 'thousand quadragintillion' },
+                { power: 129, name: 'million quadragintillion' },
+                { power: 132, name: 'billion quadragintillion' },
+                { power: 135, name: 'trillion quadragintillion' },
+                { power: 138, name: 'quadrillion quadragintillion' },
+                { power: 141, name: 'quintillion quadragintillion' },
+                { power: 144, name: 'sextillion quadragintillion' },
+                { power: 147, name: 'septillion quadragintillion' },
+                { power: 150, name: 'octillion quadragintillion' },
+                { power: 153, name: 'quinquagintillion' },
+                { power: 156, name: 'thousand quinquagintillion' },
+                { power: 159, name: 'million quinquagintillion' },
+                { power: 162, name: 'billion quinquagintillion' },
+                { power: 165, name: 'trillion quinquagintillion' },
+                { power: 168, name: 'quadrillion quinquagintillion' },
+                { power: 171, name: 'quintillion quinquagintillion' },
+                { power: 174, name: 'sextillion quinquagintillion' },
+                { power: 177, name: 'septillion quinquagintillion' },
+                { power: 180, name: 'octillion quinquagintillion' },
+                { power: 183, name: 'sexagintillion' },
+                { power: 186, name: 'thousand sexagintillion' },
+                { power: 189, name: 'million sexagintillion' },
+                { power: 192, name: 'billion sexagintillion' },
+                { power: 195, name: 'trillion sexagintillion' },
+                { power: 198, name: 'quadrillion sexagintillion' },
+                { power: 201, name: 'quintillion sexagintillion' },
+                { power: 204, name: 'sextillion sexagintillion' },
+                { power: 207, name: 'septillion sexagintillion' },
+                { power: 210, name: 'octillion sexagintillion' },
+                { power: 213, name: 'septuagintillion' },
+                { power: 216, name: 'thousand septuagintillion' },
+                { power: 219, name: 'million septuagintillion' },
+                { power: 222, name: 'billion septuagintillion' },
+                { power: 225, name: 'trillion septuagintillion' },
+                { power: 228, name: 'quadrillion septuagintillion' },
+                { power: 231, name: 'quintillion septuagintillion' },
+                { power: 234, name: 'sextillion septuagintillion' },
+                { power: 237, name: 'septillion septuagintillion' },
+                { power: 240, name: 'octillion septuagintillion' },
+                { power: 243, name: 'octogintillion' },
+                { power: 246, name: 'thousand octogintillion' },
+                { power: 249, name: 'million octogintillion' },
+                { power: 252, name: 'billion octogintillion' },
+                { power: 255, name: 'trillion octogintillion' },
+                { power: 258, name: 'quadrillion octogintillion' },
+                { power: 261, name: 'quintillion octogintillion' },
+                { power: 264, name: 'sextillion octogintillion' },
+                { power: 267, name: 'septillion octogintillion' },
+                { power: 270, name: 'octillion octogintillion' },
+                { power: 273, name: 'nonagintillion' },
+                { power: 276, name: 'thousand nonagintillion' },
+                { power: 279, name: 'million nonagintillion' },
+                { power: 282, name: 'billion nonagintillion' },
+                { power: 285, name: 'trillion nonagintillion' },
+                { power: 288, name: 'quadrillion nonagintillion' },
+                { power: 291, name: 'quintillion nonagintillion' },
+                { power: 294, name: 'sextillion nonagintillion' },
+                { power: 297, name: 'septillion nonagintillion' },
+                { power: 300, name: 'octillion nonagintillion' },
+                { power: 303, name: 'centillion' },
+                { power: 306, name: 'uncentillion' }
+            ];
+            const UNCENTILLION_POWER = 306;
+            const UNCENTILLION_LIMIT = BigInt('999') * (10n ** BigInt(UNCENTILLION_POWER));
 
-            function bigIntPower(base, exp) {
-                let res = 1n; let b = base; let e = exp;
-                if (e < 0n) return 0n; if (e === 0n) return 1n;
-                const cap = DISPLAY_CAP_THRESHOLD_MINUTES * 2n;
-                while (e > 0n) {
-                    if (e % 2n === 1n) {
-                        if (b > 0n && res > cap / b) return cap;
-                        res *= b;
+            function formatBigNum(num, decimals = 3) {
+                if (num < 1000n) return num.toString();
+                let found = null;
+                for (let i = englishNumericUnits.length - 1; i >= 0; --i) {
+                    let p = englishNumericUnits[i].power;
+                    let base = 10n ** BigInt(p);
+                    if (num >= base) {
+                        found = englishNumericUnits[i];
+                        break;
                     }
-                    if (res > cap) return cap;
-                    e /= 2n;
-                    if (e > 0n) {
-                         if (b > 0n && b > cap / b && b !== 1n) return cap;
-                        b *= b;
-                    }
-                    if (b > cap && b !== 1n) return cap;
                 }
-                return res;
+                if (!found) return num.toString();
+                if (found.power === UNCENTILLION_POWER && num > UNCENTILLION_LIMIT) {
+                    return 'uncentillion 以上';
+                }
+                let divisor = 10n ** BigInt(found.power);
+                let quotient = num / divisor;
+                let remainder = num % divisor;
+                let decimal = '';
+
+                let quotientStr = quotient.toString();
+                let integerPart = parseInt(quotientStr, 10);
+                let showDecimals = 0;
+                if (integerPart < 10) showDecimals = 2;
+                else if (integerPart < 100) showDecimals = 1;
+                else showDecimals = 0;
+                if (showDecimals > 0 && remainder > 0n) {
+                    let scale = 10n ** BigInt(showDecimals);
+                    let fraction = ((remainder * scale) / divisor);
+                    let fractionStr = fraction.toString().padStart(showDecimals, '0').replace(/0+$/, '');
+                    if (fractionStr.length > 0) decimal = '.' + fractionStr;
+                }
+                let qStr = quotient.toLocaleString('en');
+                if (showDecimals > 0 && decimal === '.0') decimal = '';
+                return qStr + decimal + ' ' + found.name;
             }
 
-            function extrapolateTime(len, category, baseMinutesBigInt) {
-                 if (baseMinutesBigInt < 0n) return -1n;
-                 if (baseMinutesBigInt === 0n && len > 18) return 0n;
-                 const charsetSize = charsetSizes[category] || 94n;
-                 const exponent = BigInt(len - 18);
-                 try {
-                    const multiplier = bigIntPower(charsetSize, exponent);
-                    if (baseMinutesBigInt > 0n && multiplier > 0n && baseMinutesBigInt > DISPLAY_CAP_THRESHOLD_MINUTES / multiplier) {
-                        return DISPLAY_CAP_THRESHOLD_MINUTES;
-                    }
-                    const result = baseMinutesBigInt * multiplier;
-                    return (result > DISPLAY_CAP_THRESHOLD_MINUTES) ? DISPLAY_CAP_THRESHOLD_MINUTES : result;
-                 } catch (e) {
-                    return DISPLAY_CAP_THRESHOLD_MINUTES;
-                 }
+            function minutesToSeconds(minutes) {
+                return minutes * 60n;
+            }
+
+            function secondsToEnglishUnit(seconds) {
+                if (seconds < 60n) return '1分未満';
+                if (seconds < 60n * 60n) return (seconds / 60n).toLocaleString('en') + '分';
+                if (seconds < 60n * 60n * 24n) return (seconds / (60n * 60n)).toLocaleString('en') + '時間';
+                if (seconds < 60n * 60n * 24n * 365n) return (seconds / (60n * 60n * 24n)).toLocaleString('en') + '日';
+                let years = seconds / (60n * 60n * 24n * 365n);
+                return formatBigNum(years) + '年';
+            }
+
+            function getPasswordCategory(password) {
+                const hasUppercase = /[A-Z]/.test(password);
+                const hasLowercase = /[a-z]/.test(password);
+                const hasNumber = /[0-9]/.test(password);
+                const hasSymbol = /[^A-Za-z0-9]/.test(password);
+                if (hasNumber && !hasLowercase && !hasUppercase && !hasSymbol) return 'num';
+                if (hasLowercase && hasUppercase && !hasNumber && !hasSymbol) return 'upperLower';
+                if (hasLowercase && !hasUppercase && !hasNumber && !hasSymbol) return 'lower';
+                if (hasNumber && hasLowercase && hasUppercase && !hasSymbol) return 'numUpperLower';
+                if (hasNumber && hasLowercase && hasUppercase && hasSymbol) return 'all';
+                if (hasNumber && hasLowercase && !hasUppercase && !hasSymbol) return 'numUpperLower';
+                if (hasNumber && hasUppercase && !hasLowercase && !hasSymbol) return 'numUpperLower';
+                if ((hasLowercase || hasUppercase) && hasSymbol && !hasNumber) return 'all';
+                if (hasNumber && hasSymbol && !hasLowercase && !hasUppercase) return 'all';
+                if (hasUppercase && !hasLowercase && !hasNumber && !hasSymbol) return 'upperLower';
+                return 'all';
+            }
+
+            function calcCrackTimeSeconds(charsetSize, length) {
+                if (length < 1) return 0n;
+                return (charsetSize ** BigInt(length)) / ATTEMPTS_PER_SECOND;
             }
 
             function animateValueUpdate(element, newText, newColorClassSuffix) {
                 const textChanged = element.textContent !== newText;
                 const currentSuffix = element.className.match(/strength-step\d+/) ? element.className.match(/strength-step\d+/)[0] : '';
                 const classChanged = newColorClassSuffix !== currentSuffix;
-
                 element.textContent = newText;
                 if (newText === '-' || !newColorClassSuffix) {
                     element.className = 'value';
                 } else {
                     element.className = 'value ' + newColorClassSuffix;
                 }
-
                 if (textChanged || classChanged) {
                     element.classList.remove('value-updated');
                     void element.offsetWidth;
                     element.classList.add('value-updated');
                 }
             }
-
             togglePassword.addEventListener('click', () => {
                 const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
                 passwordInput.setAttribute('type', type);
                 togglePasswordIcon.classList.toggle('fa-eye');
                 togglePasswordIcon.classList.toggle('fa-eye-slash');
             });
-
             function setupPopup(button, popup) {
                 function closeAllOtherPopups() {
                     [timeInfoPopup, strengthInfoPopup].forEach(p => {
@@ -711,43 +654,35 @@
             setupPopup(strengthInfoBtn, strengthInfoPopup);
             document.addEventListener('click', (e) => {
                 if (!e.target.closest('.info-icon') && !e.target.closest('.info-popup.visible .info-popup-content')) {
-                     if (timeInfoPopup.classList.contains('visible')) timeInfoPopup.classList.remove('visible');
-                     if (strengthInfoPopup.classList.contains('visible')) strengthInfoPopup.classList.remove('visible');
+                    if (timeInfoPopup.classList.contains('visible')) timeInfoPopup.classList.remove('visible');
+                    if (strengthInfoPopup.classList.contains('visible')) strengthInfoPopup.classList.remove('visible');
                 }
             });
             timeInfoPopup.addEventListener('click', e => { if (e.target !== timeInfoPopup) e.stopPropagation(); });
             strengthInfoPopup.addEventListener('click', e => { if (e.target !== strengthInfoPopup) e.stopPropagation(); });
-
             function setupTableToggle(button, tableContainerElement, allTableContainers) {
                 button.addEventListener('click', () => {
-                    const currentlyVisible = tableContainerElement.style.display === 'block' && tableContainerElement.classList.contains('visible');
                     allTableContainers.forEach(tc => { tc.style.display = 'none'; tc.classList.remove('visible'); });
-                    if (!currentlyVisible) {
-                        tableContainerElement.style.display = 'block';
-                        requestAnimationFrame(() => {
-                            tableContainerElement.classList.add('visible');
-                            // MathJax typesetting removed
-                            setTimeout(() => tableContainerElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
-                        });
-                    }
+                    tableContainerElement.style.display = 'block';
+                    setTimeout(() => {
+                        tableContainerElement.classList.add('visible');
+                        tableContainerElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }, 10);
                 });
             }
             const allTableContainers = [crackTimeTableContainer, numericUnitsTableContainer, strengthLevelsTableContainer];
             setupTableToggle(toggleCrackTimeTableBtn, crackTimeTableContainer, allTableContainers);
             setupTableToggle(toggleNumericUnitsTableBtn, numericUnitsTableContainer, allTableContainers);
             setupTableToggle(toggleStrengthLevelsTableBtn, strengthLevelsTableContainer, allTableContainers);
-
             passwordInput.addEventListener('input', evaluatePassword);
 
             function evaluatePassword() {
                 const password = passwordInput.value;
                 const length = password.length;
-
                 let newCrackTimeText = '-';
                 let newPasswordStrengthText = '-';
                 let strengthColorClassSuffix = '';
                 let barWidthPercent = '0%';
-
                 if (length === 0) {
                     strengthBarIndicator.style.width = '0%';
                     strengthBarIndicator.className = 'strength-bar-indicator';
@@ -760,45 +695,26 @@
                     const hasLowercase = /[a-z]/.test(password);
                     const hasNumber = /[0-9]/.test(password);
                     const hasSymbol = /[^A-Za-z0-9]/.test(password);
-
-                    let category = 'lower';
-                    if (hasNumber && !hasLowercase && !hasUppercase && !hasSymbol) category = 'num';
-                    else if (hasLowercase && hasUppercase && !hasNumber && !hasSymbol) category = 'upperLower';
-                    else if (hasLowercase && !hasUppercase && !hasNumber && !hasSymbol) category = 'lower';
-                    else if (hasNumber && hasLowercase && hasUppercase && !hasSymbol) category = 'numUpperLower';
-                    else if (hasNumber && hasLowercase && hasUppercase && hasSymbol) category = 'all';
-                    else if (hasNumber && hasLowercase && !hasUppercase && !hasSymbol) category = 'numUpperLower';
-                    else if (hasNumber && hasUppercase && !hasLowercase && !hasSymbol) category = 'numUpperLower';
-                    else if ((hasLowercase || hasUppercase) && hasSymbol && !hasNumber) category = 'all';
-                    else if (hasNumber && hasSymbol && !hasLowercase && !hasUppercase) category = 'all';
-                    else if (hasUppercase && !hasLowercase && !hasNumber && !hasSymbol) category = 'upperLower';
-                    else category = 'all';
-
-                    let totalMinutesBigInt = 0n;
-                    if (length < 4) totalMinutesBigInt = 0n;
-                    else if (length <= 18) totalMinutesBigInt = parseRawTimeToMinutes(rawCrackTimes[length]?.[category] || 'i');
-                    else {
-                        const baseRawTime = rawCrackTimes[18]?.[category];
-                        const baseMinutesBigInt = parseRawTimeToMinutes(baseRawTime || 'i');
-                        totalMinutesBigInt = extrapolateTime(length, category, baseMinutesBigInt);
-                    }
-
-                    newCrackTimeText = minutesToJapaneseTime(totalMinutesBigInt);
-                    const colorClassForTime = getColorClassForTime(totalMinutesBigInt);
-
+                    const category = getPasswordCategory(password);
+                    let totalSeconds = calcCrackTimeSeconds(charsetSizes[category], length);
+                    let totalMinutes = totalSeconds / 60n;
+                    newCrackTimeText = secondsToEnglishUnit(totalSeconds);
+                    const colorClassForTime = getColorClassForTime(totalMinutes);
                     if (colorClassForTime) {
                         strengthColorClassSuffix = colorClassForTime.replace('color-', 'strength-');
                         const levelIndex = parseInt(strengthColorClassSuffix.replace('strength-step', ''), 10) - 1;
-                        if (strengthLevelData[levelIndex]) {
-                            newPasswordStrengthText = strengthLevelData[levelIndex].level;
+                        if (levelIndex >= 0) {
+                            // Assign a level name if defined
+                            const levels = [
+                                '危険','非常に弱い','弱い','やや弱い','普通',
+                                'やや強い','強い','非常に強い','極めて強い','ほぼ解読不能'
+                            ];
+                            newPasswordStrengthText = levels[levelIndex] || '-';
                         }
                     }
-
-                    barWidthPercent = getStrengthBarWidth(strengthColorClassSuffix);
+                    barWidthPercent = strengthColorClassSuffix ? (parseInt(strengthColorClassSuffix.replace('strength-step', ''), 10) * 10) + '%' : '0%';
                     strengthBarIndicator.style.width = barWidthPercent;
                     strengthBarIndicator.className = 'strength-bar-indicator' + (strengthColorClassSuffix ? ' ' + strengthColorClassSuffix : '');
-
-
                     lengthCheck.classList.toggle('met', length >= 8);
                     lengthCheck.querySelector('.icon i').className = length >= 8 ? 'fas fa-check' : 'fas fa-times';
                     uppercaseCheck.classList.toggle('met', hasUppercase);
@@ -808,91 +724,105 @@
                     symbolCheck.classList.toggle('met', hasSymbol);
                     symbolCheck.querySelector('.icon i').className = hasSymbol ? 'fas fa-check' : 'fas fa-times';
                 }
-
                 if (previousCrackTimeText !== newCrackTimeText || crackTimeElement.className.indexOf(strengthColorClassSuffix) === -1 || (newCrackTimeText === '-' && crackTimeElement.className !== 'value')) {
-                   animateValueUpdate(crackTimeElement, newCrackTimeText, (newCrackTimeText === '-' ? '' : strengthColorClassSuffix));
+                    animateValueUpdate(crackTimeElement, newCrackTimeText, (newCrackTimeText === '-' ? '' : strengthColorClassSuffix));
                 }
                 previousCrackTimeText = newCrackTimeText;
-
                 if (previousPasswordStrengthText !== newPasswordStrengthText || passwordStrengthElement.className.indexOf(strengthColorClassSuffix) === -1 || (newPasswordStrengthText === '-' && passwordStrengthElement.className !== 'value')) {
-                   animateValueUpdate(passwordStrengthElement, newPasswordStrengthText, (newPasswordStrengthText === '-' ? '' : strengthColorClassSuffix));
+                    animateValueUpdate(passwordStrengthElement, newPasswordStrengthText, (newPasswordStrengthText === '-' ? '' : strengthColorClassSuffix));
                 }
                 previousPasswordStrengthText = newPasswordStrengthText;
             }
-
 
             function generateCrackTimeTable() {
                 const mainTableBody = document.querySelector('#passwordStrengthTable tbody');
                 if (!mainTableBody) return;
                 mainTableBody.innerHTML = '';
                 const categories = ['num', 'lower', 'upperLower', 'numUpperLower', 'all'];
-                let len = 4;
-                const baseTimes = {};
-                categories.forEach(cat => { baseTimes[cat] = parseRawTimeToMinutes(rawCrackTimes[18]?.[cat] || 'i'); });
-                while (len <= 100) {
+                for (let len = 4; len <= 100; ++len) {
                     const row = mainTableBody.insertRow();
                     row.insertCell().textContent = len;
                     categories.forEach(cat => {
-                        const cellTime = row.insertCell();
-                        let minutesBigInt = (len <= 18) ? parseRawTimeToMinutes(rawCrackTimes[len]?.[cat] || 'i') : extrapolateTime(len, cat, baseTimes[cat]);
-                        cellTime.textContent = minutesToJapaneseTime(minutesBigInt);
-                        const colorClass = getColorClassForTime(minutesBigInt);
-                        if (colorClass) cellTime.classList.add(colorClass);
+                        const cell = row.insertCell();
+                        let sec = calcCrackTimeSeconds(charsetSizes[cat], len);
+                        let min = sec / 60n;
+                        cell.textContent = secondsToEnglishUnit(sec);
+                        const colorClass = getColorClassForTime(min);
+                        if (colorClass) cell.classList.add(colorClass);
                     });
-                    len++;
                 }
             }
 
             function generateNumericUnitsTable() {
                 if (!numericUnitsTableBody) return;
                 numericUnitsTableBody.innerHTML = '';
-                const baseUnitsForContext = [
-                    { name: '万', yomikata: 'まん', power: 4 }, { name: '億', yomikata: 'おく', power: 8 },
-                    { name: '兆', yomikata: 'ちょう', power: 12 }, { name: '京', yomikata: 'けい', power: 16 }
-                ];
-                const allDisplayUnits = [...baseUnitsForContext, ...largeNumericUnits];
-                allDisplayUnits.forEach(unit => {
+                for (let i = 0; i < englishNumericUnits.length; ++i) {
+                    const unit = englishNumericUnits[i];
                     const row = numericUnitsTableBody.insertRow();
                     row.insertCell().textContent = unit.name;
-                    row.insertCell().textContent = unit.yomikata;
-                    const powerCell = row.insertCell();
-                    // Changed from MathJax to simple text or sup tag
-                    // Using simple text "10^X"
-                    powerCell.textContent = `10^${unit.power}`;
-                    // Or, using <sup> for better visual representation if desired:
-                    // powerCell.innerHTML = `10<sup>${unit.power}</sup>`;
-                });
+                    row.insertCell().textContent = '10^' + unit.power;
+                }
             }
 
+            // 強度レベル表の「おおよその解析時間」英語単位バージョン
             function generateStrengthLevelsTable() {
                 if (!strengthLevelsTableBody) return;
                 strengthLevelsTableBody.innerHTML = '';
-                strengthLevelData.forEach(data => {
+                // 秒数で下限値・上限値を定義
+                const ranges = [
+                    [0n, 60n], // less than 1 minute
+                    [60n, HOUR * 3n], // 1分～3時間
+                    [HOUR * 3n, DAY * 2n], // 3時間～2日
+                    [DAY * 2n, DAY * 60n], // 2日～60日
+                    [DAY * 60n, YEAR * 50n], // 60日～50年
+                    [YEAR * 50n, YEAR * 3000n], // 50年～3000年
+                    [YEAR * 3000n, YEAR * 2000000n], // 3000年～200万年
+                    [YEAR * 2000000n, YEAR * 10n**12n], // 200万年～1兆年
+                    [YEAR * 10n**12n, YEAR * 10n**20n], // 1兆年～10^20年
+                    [YEAR * 10n**20n, YEAR * 10n**306n] // 10^20年～uncentillion年
+                ];
+                const levelNames = [
+                    '危険','非常に弱い','弱い','やや弱い','普通',
+                    'やや強い','強い','非常に強い','極めて強い','ほぼ解読不能'
+                ];
+                const colorClasses = [
+                    'strength-step1','strength-step2','strength-step3','strength-step4','strength-step5',
+                    'strength-step6','strength-step7','strength-step8','strength-step9','strength-step10'
+                ];
+                for (let i = 0; i < levelNames.length; ++i) {
                     const row = strengthLevelsTableBody.insertRow();
-                    row.insertCell().textContent = data.level;
+                    row.insertCell().textContent = levelNames[i];
                     const colorCell = row.insertCell();
                     const colorSpan = document.createElement('span');
-                    colorSpan.className = `value ${data.colorClass}`;
+                    colorSpan.className = `value ${colorClasses[i]}`;
                     colorSpan.style.cssText = 'display: inline-block; width: 20px; height: 20px; border-radius: 3px;';
                     colorSpan.textContent = "\u00A0";
                     colorCell.appendChild(colorSpan);
-                    row.insertCell().textContent = data.timeRange;
-                });
+
+                    let displayText = '';
+                    if (i < ranges.length) {
+                        let lower = ranges[i][0], upper = ranges[i][1];
+                        if (lower === 0n) displayText = 'less than 1 minute';
+                        else {
+                            let lowerText = secondsToEnglishUnit(lower);
+                            let upperText = secondsToEnglishUnit(upper);
+                            displayText = lowerText + ' ～ ' + upperText;
+                        }
+                    }
+                    row.insertCell().textContent = displayText;
+                }
             }
 
             document.querySelectorAll('.fade-in-element').forEach((el, index) => {
                 if (!el.style.animationDelay) el.style.animationDelay = `${index * 0.05}s`;
                 if (!el.classList.contains('fade-in-element')) el.classList.add('fade-in-element');
             });
-
             generateCrackTimeTable();
             generateNumericUnitsTable();
             generateStrengthLevelsTable();
-
             previousCrackTimeText = crackTimeElement.textContent;
             previousPasswordStrengthText = passwordStrengthElement.textContent;
             evaluatePassword();
-
         });
     </script>
 </body>
