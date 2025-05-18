@@ -70,16 +70,21 @@
             --table-border: #dadce0;
             --link-color: #1a73e8;
 
-            /* Color Scale (Purple -> Red -> Orange -> Yellow -> Green -> Blue) */
-            --color-step1: #a970c4; /* Purple */
-            --color-step2: #ea617a; /* Red */
-            --color-step3: #f4a460; /* Orange */
-            --color-step4: #fdd835; /* Yellow */
-            --color-step5: #69b371; /* Green */
-            --color-step6: #4285F4; /* Blue (Google Blue) */
+            /* Color Scale (10 Steps) */
+            --color-step1: #ff0000;  /* 危険 (指定: 赤) */
+            --color-step2: #ff4500;  /* 非常に弱い (オレンジレッド) */
+            --color-step3: #ff8c00;  /* 弱い (ダークオレンジ) */
+            --color-step4: #ffd700;  /* やや弱い (ゴールド) */
+            --color-step5: #adff2f;  /* 普通 (グリーンイエロー) */
+            --color-step6: #32cd32;  /* やや強い (ライムグリーン) */
+            --color-step7: #008000;  /* 強い (グリーン) */
+            --color-step8: #1e90ff;  /* 非常に強い (ドジャーブルー) */
+            --color-step9: #4169e1;  /* 極めて強い (ロイヤルブルー) */
+            --color-step10: #7f00ff; /* ほぼ解読不能 (指定: 紫) */
+
 
             --color-text-light: #ffffff;
-            --color-text-dark: #202124; /* Dark text for lighter backgrounds (Yellow, Orange sometimes) */
+            --color-text-dark: #202124;
         }
 
         @media (prefers-color-scheme: dark) {
@@ -97,7 +102,7 @@
                 --table-header-bg: #3c4043;
                 --table-border: #5f6368;
                 --link-color: #8ab4f8;
-                --color-text-dark: #202124;
+                --color-text-dark: #202124; /* Keep dark text for light backgrounds even in dark mode */
             }
         }
 
@@ -109,7 +114,7 @@
         }
 
         body {
-            font-family: 'Roboto', Arial, sans-serif; /* Changed to Roboto */
+            font-family: 'Roboto', Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             line-height: 1.6;
@@ -117,14 +122,10 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            opacity: 0; /* Initially hidden for fade-in */
-            animation: mainFadeIn 0.6s ease-out forwards; /* Renamed body fade-in */
+            opacity: 0;
+            animation: mainFadeIn 0.6s ease-out forwards;
         }
-        @keyframes mainFadeIn { /* Keyframe for body */
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
+        @keyframes mainFadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .container {
             max-width: 700px;
@@ -134,29 +135,22 @@
             border-radius: 8px;
         }
 
-
         h1 {
             text-align: center;
             margin-bottom: 30px;
             color: var(--text-color);
-            font-weight: 500; /* Roboto medium */
+            font-weight: 500;
         }
 
-        /* General Fade-in Animation for elements */
-        .fade-in-element { /* New class for element-specific fade-in */
+        .fade-in-element {
              opacity: 0;
              animation: elementFadeIn 0.5s ease-out forwards;
         }
-        @keyframes elementFadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
+        @keyframes elementFadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-
-        /* Password Input Area */
         .password-wrapper {
             position: relative;
-            margin-bottom: 10px; /* Reduced margin for strength bar */
+            margin-bottom: 10px;
         }
 
         #passwordInput {
@@ -168,13 +162,11 @@
             background-color: var(--input-bg);
             color: var(--text-color);
         }
-
         #passwordInput:focus {
             outline: none;
             border-color: var(--link-color);
             box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
         }
-
         #togglePassword {
             position: absolute;
             right: 10px;
@@ -188,7 +180,6 @@
             padding: 5px;
         }
 
-        /* Strength Bar */
         .strength-bar-container {
             width: 100%;
             height: 6px;
@@ -197,18 +188,14 @@
             margin-bottom: 15px;
             overflow: hidden;
         }
-
         .strength-bar-indicator {
             height: 100%;
             width: 0%;
-            background-color: var(--color-step1); /* Default/Initial color */
+            background-color: var(--input-border); /* Neutral initial color for empty bar */
             border-radius: 3px;
             transition: width 0.4s ease-out, background-color 0.4s ease-out;
         }
-        /* strength-stepX classes will provide the background color for the indicator */
 
-
-        /* Privacy Notice */
         .privacy-notice {
             display: flex;
             align-items: center;
@@ -216,21 +203,19 @@
             color: var(--secondary-text);
             margin-bottom: 20px;
         }
-
         .privacy-notice .icon {
             display: inline-flex;
             justify-content: center;
             align-items: center;
             width: 18px;
             height: 18px;
-            background-color: var(--color-step5); /* Use Green checkmark */
+            background-color: #69b371; /* Green checkmark, explicit color */
             color: var(--color-text-light);
             border-radius: 50%;
             margin-right: 8px;
             font-size: 0.7em;
         }
 
-        /* Criteria Checklist */
         .criteria {
             list-style: none;
             padding: 0;
@@ -239,14 +224,12 @@
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 10px;
         }
-
         .criterion {
             display: flex;
             align-items: center;
             font-size: 0.9rem;
             color: var(--secondary-text);
         }
-
         .criterion .icon {
             display: inline-flex;
             justify-content: center;
@@ -261,20 +244,17 @@
             font-size: 0.7em;
             transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
-
         .criterion.met .icon {
-            background-color: var(--color-step5); /* Green background */
+            background-color: #69b371; /* Green checkmark, explicit color */
             color: var(--color-text-light);
-            border-color: var(--color-step5);
+            border-color: #69b371;
         }
 
-        /* Results Section */
         .results-section {
             margin-top: 20px;
             padding-top: 20px;
             border-top: 1px solid var(--input-border);
         }
-
         .result-item {
             display: flex;
             align-items: center;
@@ -282,7 +262,6 @@
             font-size: 1rem;
             position: relative;
         }
-
         .result-item .icon {
              color: var(--icon-color);
              font-size: 1.2em;
@@ -296,139 +275,86 @@
             margin-left: 8px;
             cursor: pointer;
         }
-
-         .result-item .value {
-            font-weight: 500; /* Roboto medium */
+        .result-item .value {
+            font-weight: 500;
             margin-left: auto;
             padding: 3px 8px;
             border-radius: 4px;
-            color: var(--text-color); /* Default text color */
+            color: var(--text-color); /* Default text color, overridden by specific strength classes */
          }
 
-        /* Info Popups - Pure Fade-in/out */
         .info-popup {
             position: absolute;
-            bottom: 110%;
-            left: 25px;
-            background-color: var(--popup-bg);
-            color: var(--popup-text);
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            z-index: 10;
-            width: max-content;
-            max-width: 250px;
-            opacity: 0; /* Start fully transparent */
-            visibility: hidden; /* Start hidden and not taking space */
+            bottom: 110%; left: 25px;
+            background-color: var(--popup-bg); color: var(--popup-text);
+            padding: 8px 12px; border-radius: 4px; font-size: 0.85rem;
+            z-index: 10; width: max-content; max-width: 250px;
+            opacity: 0; visibility: hidden;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            transition: opacity 0.3s ease-out, visibility 0s linear 0.3s; /* Transition opacity, then visibility after opacity aniamtion */
+            transition: opacity 0.3s ease-out, visibility 0s linear 0.3s;
         }
-         .info-popup::after {
-            content: '';
-            position: absolute;
-            top: 100%;
-            left: 15px;
-            border-width: 5px;
-            border-style: solid;
+        .info-popup::after {
+            content: ''; position: absolute; top: 100%; left: 15px;
+            border-width: 5px; border-style: solid;
             border-color: var(--popup-bg) transparent transparent transparent;
         }
         .info-popup.visible {
-            opacity: 1;
-            visibility: visible;
-            transition: opacity 0.3s ease-out, visibility 0s linear 0s; /* Make visible immediately, then fade in opacity */
+            opacity: 1; visibility: visible;
+            transition: opacity 0.3s ease-out, visibility 0s linear 0s;
         }
 
+        /* Color Classes for Strength/Time (10 Steps) */
+        /* Text color is determined by the background color's brightness */
+        .strength-step1  { background-color: var(--color-step1);  color: var(--color-text-light); } /* Red */
+        .strength-step2  { background-color: var(--color-step2);  color: var(--color-text-light); } /* OrangeRed */
+        .strength-step3  { background-color: var(--color-step3);  color: var(--color-text-dark);  } /* DarkOrange */
+        .strength-step4  { background-color: var(--color-step4);  color: var(--color-text-dark);  } /* Gold */
+        .strength-step5  { background-color: var(--color-step5);  color: var(--color-text-dark);  } /* GreenYellow */
+        .strength-step6  { background-color: var(--color-step6);  color: var(--color-text-dark);  } /* LimeGreen */
+        .strength-step7  { background-color: var(--color-step7);  color: var(--color-text-light); } /* Green */
+        .strength-step8  { background-color: var(--color-step8);  color: var(--color-text-light); } /* DodgerBlue */
+        .strength-step9  { background-color: var(--color-step9);  color: var(--color-text-light); } /* RoyalBlue */
+        .strength-step10 { background-color: var(--color-step10); color: var(--color-text-light); } /* Purple */
 
-        /* Color Classes for Strength/Time (6 Steps) */
-        /* These are also used for the strength bar indicator's background */
-        .strength-step1 { background-color: var(--color-step1); color: var(--color-text-light); }
-        .strength-step2 { background-color: var(--color-step2); color: var(--color-text-light); }
-        .strength-step3 { background-color: var(--color-step3); color: var(--color-text-dark); } /* Text color for the value span */
-        .strength-step4 { background-color: var(--color-step4); color: var(--color-text-dark); } /* Text color for the value span */
-        .strength-step5 { background-color: var(--color-step5); color: var(--color-text-light); }
-        .strength-step6 { background-color: var(--color-step6); color: var(--color-text-light); }
-
-
-        /* Table Styles */
         .table-toggle-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 20px;
-            margin-bottom: 10px;
+            display: flex; flex-wrap: wrap; gap: 10px;
+            margin-top: 20px; margin-bottom: 10px;
         }
         .table-toggle-buttons button {
-            background-color: var(--input-bg);
-            color: var(--secondary-text);
-            border: 1px solid var(--input-border);
-            padding: 8px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.9rem;
+            background-color: var(--input-bg); color: var(--secondary-text);
+            border: 1px solid var(--input-border); padding: 8px 15px;
+            border-radius: 4px; cursor: pointer; font-size: 0.9rem;
             transition: background-color 0.2s ease, border-color 0.2s ease;
         }
-        .table-toggle-buttons button:hover {
-             background-color: var(--input-border);
-        }
+        .table-toggle-buttons button:hover { background-color: var(--input-border); }
 
         .table-container {
-            display: none; /* Initially hidden */
-            opacity: 0;
-            margin-top: 10px;
-            width: 100%;
-            overflow-x: auto;
-            transition: opacity 0.5s ease-out; /* Only transition opacity */
+            display: none; opacity: 0; margin-top: 10px;
+            width: 100%; overflow-x: auto;
+            transition: opacity 0.5s ease-out;
         }
-        .table-container.visible {
-            display: block; /* Make it take space */
-            opacity: 1;
-        }
+        .table-container.visible { display: block; opacity: 1; }
 
-        .info-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.85rem;
-            min-width: 300px;
-        }
-        .info-table th,
-        .info-table td {
-            border: 1px solid var(--table-border);
-            padding: 8px 10px;
-            text-align: left;
-        }
-        .info-table th {
-            background-color: var(--table-header-bg);
-            font-weight: 500;
-        }
-        #passwordStrengthTable th,
-        #passwordStrengthTable td {
-             text-align: center;
-        }
-        #passwordStrengthTable td:first-child {
-            font-weight: 500;
-            background-color: var(--table-header-bg);
-        }
+        .info-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 300px; }
+        .info-table th, .info-table td { border: 1px solid var(--table-border); padding: 8px 10px; text-align: left; }
+        .info-table th { background-color: var(--table-header-bg); font-weight: 500; }
+        #passwordStrengthTable th, #passwordStrengthTable td { text-align: center; }
+        #passwordStrengthTable td:first-child { font-weight: 500; background-color: var(--table-header-bg); }
 
-        #passwordStrengthTable td.color-step1 { background-color: var(--color-step1); color: var(--color-text-light); }
-        #passwordStrengthTable td.color-step2 { background-color: var(--color-step2); color: var(--color-text-light); }
-        #passwordStrengthTable td.color-step3 { background-color: var(--color-step3); color: var(--color-text-dark); }
-        #passwordStrengthTable td.color-step4 { background-color: var(--color-step4); color: var(--color-text-dark); }
-        #passwordStrengthTable td.color-step5 { background-color: var(--color-step5); color: var(--color-text-light); }
-        #passwordStrengthTable td.color-step6 { background-color: var(--color-step6); color: var(--color-text-light); }
+        #passwordStrengthTable td.color-step1  { background-color: var(--color-step1);  color: var(--color-text-light); }
+        #passwordStrengthTable td.color-step2  { background-color: var(--color-step2);  color: var(--color-text-light); }
+        #passwordStrengthTable td.color-step3  { background-color: var(--color-step3);  color: var(--color-text-dark);  }
+        #passwordStrengthTable td.color-step4  { background-color: var(--color-step4);  color: var(--color-text-dark);  }
+        #passwordStrengthTable td.color-step5  { background-color: var(--color-step5);  color: var(--color-text-dark);  }
+        #passwordStrengthTable td.color-step6  { background-color: var(--color-step6);  color: var(--color-text-dark);  }
+        #passwordStrengthTable td.color-step7  { background-color: var(--color-step7);  color: var(--color-text-light); }
+        #passwordStrengthTable td.color-step8  { background-color: var(--color-step8);  color: var(--color-text-light); }
+        #passwordStrengthTable td.color-step9  { background-color: var(--color-step9);  color: var(--color-text-light); }
+        #passwordStrengthTable td.color-step10 { background-color: var(--color-step10); color: var(--color-text-light); }
 
-        /* Styles for value update animation */
-        .result-item .value.value-updated {
-            animation: valueFadeIn 0.3s ease-out;
-        }
 
-        @keyframes valueFadeIn {
-            from {
-                opacity: 0.3;
-            }
-            to {
-                opacity: 1;
-            }
-        }
+        .result-item .value.value-updated { animation: valueFadeIn 0.3s ease-out; }
+        @keyframes valueFadeIn { from { opacity: 0.3; } to { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -541,7 +467,7 @@
             const togglePasswordIcon = togglePassword.querySelector('i');
             const crackTimeElement = document.getElementById('crackTime');
             const passwordStrengthElement = document.getElementById('passwordStrength');
-            const strengthBarIndicator = document.getElementById('strengthBarIndicator'); // Added
+            const strengthBarIndicator = document.getElementById('strengthBarIndicator');
             const lengthCheck = document.getElementById('lengthCheck');
             const uppercaseCheck = document.getElementById('uppercaseCheck');
             const numberCheck = document.getElementById('numberCheck');
@@ -562,17 +488,15 @@
             const strengthLevelsTableContainer = document.getElementById('strengthLevelsTableContainer');
             const strengthLevelsTableBody = document.querySelector('#strengthLevelsTable tbody');
 
-            // --- State for value animation ---
             let previousCrackTimeText = crackTimeElement.textContent;
             let previousPasswordStrengthText = passwordStrengthElement.textContent;
 
-            // --- Constants and Data ---
             const MINUTE_CONSTANT = 60n;
             const HOUR_CONSTANT = MINUTE_CONSTANT * 60n;
             const DAY_CONSTANT = HOUR_CONSTANT * 24n;
             const WEEK_CONSTANT = DAY_CONSTANT * 7n;
-            const MONTH_CONSTANT = DAY_CONSTANT * 30n; // Approximation
-            const YEAR_CONSTANT = DAY_CONSTANT * 365n; // Approximation
+            const MONTH_CONSTANT = DAY_CONSTANT * 30n;
+            const YEAR_CONSTANT = DAY_CONSTANT * 365n;
             const MURYOUTAISUU_YEARS_IN_MINUTES = YEAR_CONSTANT * 10n**68n;
             const DISPLAY_CAP_THRESHOLD_MINUTES = (MURYOUTAISUU_YEARS_IN_MINUTES * 99999n) / 10n;
             const DISPLAY_CAP_STRING = "9999.9無量大数年以上";
@@ -636,13 +560,19 @@
             ];
 
             const charsetSizes = { num: 10n, lower: 26n, upperLower: 52n, numUpperLower: 62n, all: 94n };
+
+            // Updated 10-step strength levels
             const strengthLevelData = [
-                { level: '非常に弱い', colorClass: 'strength-step1', timeRange: '瞬時' },
-                { level: '弱い', colorClass: 'strength-step2', timeRange: '1分未満～1週間' },
-                { level: '普通', colorClass: 'strength-step3', timeRange: '1週間～100年' },
-                { level: '強い', colorClass: 'strength-step4', timeRange: '100年～1万年' },
-                { level: '非常に強い', colorClass: 'strength-step5', timeRange: '1万年～1兆年' },
-                { level: '極めて強い', colorClass: 'strength-step6', timeRange: '1兆年以上' }
+                { level: '危険', colorClass: 'strength-step1', timeRange: '瞬時' },
+                { level: '非常に弱い', colorClass: 'strength-step2', timeRange: '1分未満' },
+                { level: '弱い', colorClass: 'strength-step3', timeRange: '数分～数時間' },
+                { level: 'やや弱い', colorClass: 'strength-step4', timeRange: '数時間～数日' },
+                { level: '普通', colorClass: 'strength-step5', timeRange: '数日～数ヶ月' },
+                { level: 'やや強い', colorClass: 'strength-step6', timeRange: '数ヶ月～数十年' },
+                { level: '強い', colorClass: 'strength-step7', timeRange: '数十年～数千年' },
+                { level: '非常に強い', colorClass: 'strength-step8', timeRange: '数千年～数百万年' },
+                { level: '極めて強い', colorClass: 'strength-step9', timeRange: '数百万年～数兆年' },
+                { level: 'ほぼ解読不能', colorClass: 'strength-step10', timeRange: '数兆年以上' }
             ];
 
             // --- Helper Functions ---
@@ -701,30 +631,41 @@
                 } catch (e) { return -1n; }
             }
 
+            // Updated to return 10 color classes
             function getColorClassForTime(totalMinutesBigInt) {
-                 if (totalMinutesBigInt < 0n) return ''; // Error case
-                 const th_step2 = WEEK_CONSTANT, th_step3 = YEAR_CONSTANT * 100n, th_step4 = YEAR_CONSTANT * 10000n, th_step5 = YEAR_CONSTANT * 10n**12n;
-                 if (totalMinutesBigInt === 0n) return 'color-step1'; // Instant
-                 if (totalMinutesBigInt < th_step2) return 'color-step2'; // Weak
-                 if (totalMinutesBigInt < th_step3) return 'color-step3'; // Okay
-                 if (totalMinutesBigInt < th_step4) return 'color-step4'; // Good
-                 if (totalMinutesBigInt < th_step5) return 'color-step5'; // Strong
-                 return 'color-step6'; // Very Strong
+                if (totalMinutesBigInt < 0n) return ''; // Error
+
+                if (totalMinutesBigInt === 0n) return 'color-step1';  // 危険 (瞬時)
+
+                // Thresholds in minutes (BigInt)
+                const th_step2 = MINUTE_CONSTANT;           // 1分
+                const th_step3 = HOUR_CONSTANT * 3n;        // 3時間
+                const th_step4 = DAY_CONSTANT * 2n;         // 2日
+                const th_step5 = MONTH_CONSTANT * 2n;       // 2ヶ月
+                const th_step6 = YEAR_CONSTANT * 50n;       // 50年
+                const th_step7 = YEAR_CONSTANT * 3000n;     // 3千年
+                const th_step8 = YEAR_CONSTANT * 2000000n;  // 2百万年 (2 My)
+                const th_step9 = YEAR_CONSTANT * 10n**12n;  // 1兆年 (1 Ty)
+                // Step 10 is for anything above step 9
+
+                if (totalMinutesBigInt < th_step2) return 'color-step2';  // 非常に弱い
+                if (totalMinutesBigInt < th_step3) return 'color-step3';  // 弱い
+                if (totalMinutesBigInt < th_step4) return 'color-step4';  // やや弱い
+                if (totalMinutesBigInt < th_step5) return 'color-step5';  // 普通
+                if (totalMinutesBigInt < th_step6) return 'color-step6';  // やや強い
+                if (totalMinutesBigInt < th_step7) return 'color-step7';  // 強い
+                if (totalMinutesBigInt < th_step8) return 'color-step8';  // 非常に強い
+                if (totalMinutesBigInt < th_step9) return 'color-step9';  // 極めて強い
+                return 'color-step10'; // ほぼ解読不能
             }
 
-            function getStrengthBarWidth(colorClassSuffix) {
+            // Updated for 10 steps
+            function getStrengthBarWidth(colorClassSuffix) { // e.g. "strength-step1"
                 if (!colorClassSuffix) return '0%';
-                switch (colorClassSuffix) { // strength-stepX (derived from color-stepX)
-                    case 'strength-step1': return '16.6%';
-                    case 'strength-step2': return '33.3%';
-                    case 'strength-step3': return '50%';
-                    case 'strength-step4': return '66.6%';
-                    case 'strength-step5': return '83.3%';
-                    case 'strength-step6': return '100%';
-                    default: return '0%';
-                }
+                const stepNumber = parseInt(colorClassSuffix.replace('strength-step', ''), 10);
+                if (isNaN(stepNumber) || stepNumber < 1 || stepNumber > 10) return '0%';
+                return `${stepNumber * 10}%`;
             }
-
 
             function bigIntPower(base, exp) {
                 let res = 1n; let b = base; let e = exp;
@@ -741,7 +682,7 @@
 
             function extrapolateTime(len, category, baseMinutesBigInt) {
                  if (baseMinutesBigInt < 0n) return -1n;
-                 if (baseMinutesBigInt === 0n && len > 18) return 0n;
+                 if (baseMinutesBigInt === 0n && len > 18) return 0n; // If base is instant, extrapolation beyond table is still instant
                  const charsetSize = charsetSizes[category] || 94n;
                  const exponent = BigInt(len - 18);
                  try {
@@ -756,19 +697,23 @@
 
             function animateValueUpdate(element, newText, newColorClassSuffix) {
                 const textChanged = element.textContent !== newText;
+                const currentSuffix = element.className.match(/strength-step\d+/) ? element.className.match(/strength-step\d+/)[0] : '';
+                const classChanged = newColorClassSuffix !== currentSuffix;
+
                 element.textContent = newText;
-                // Ensure base 'value' class is always present, then add specific strength class
-                element.className = 'value' + (newColorClassSuffix ? ' ' + newColorClassSuffix : '');
+                if (newText === '-' || !newColorClassSuffix) { // No color for '-'
+                    element.className = 'value';
+                } else {
+                    element.className = 'value ' + newColorClassSuffix;
+                }
 
-
-                if (textChanged) {
+                if (textChanged || classChanged) {
                     element.classList.remove('value-updated');
-                    void element.offsetWidth; // Trigger reflow to restart animation
+                    void element.offsetWidth;
                     element.classList.add('value-updated');
-                    // No need for setTimeout to remove class if animation is one-shot and fills
                 }
             }
-            // --- Event Listeners ---
+
             togglePassword.addEventListener('click', () => {
                 const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
                 passwordInput.setAttribute('type', type);
@@ -779,14 +724,10 @@
             function setupPopup(button, popup) {
                 function closeAllOtherPopups() {
                     [timeInfoPopup, strengthInfoPopup].forEach(p => {
-                        if (p !== popup && p.classList.contains('visible')) {
-                            p.classList.remove('visible');
-                        }
+                        if (p !== popup && p.classList.contains('visible')) p.classList.remove('visible');
                     });
                 }
-                button.addEventListener('click', (e) => {
-                    e.stopPropagation(); closeAllOtherPopups(); popup.classList.toggle('visible');
-                });
+                button.addEventListener('click', (e) => { e.stopPropagation(); closeAllOtherPopups(); popup.classList.toggle('visible'); });
                 popup.addEventListener('click', (e) => { if (e.target === popup) popup.classList.remove('visible'); });
             }
             setupPopup(timeInfoBtn, timeInfoPopup);
@@ -823,19 +764,18 @@
 
             passwordInput.addEventListener('input', evaluatePassword);
 
-            // --- Core Evaluation Logic ---
             function evaluatePassword() {
                 const password = passwordInput.value;
                 const length = password.length;
 
                 let newCrackTimeText = '-';
                 let newPasswordStrengthText = '-';
-                let strengthColorClassSuffix = ''; // e.g., "strength-step1"
+                let strengthColorClassSuffix = ''; // e.g., "strength-step1" (used for bar and text background)
                 let barWidthPercent = '0%';
 
                 if (length === 0) {
                     strengthBarIndicator.style.width = '0%';
-                    strengthBarIndicator.className = 'strength-bar-indicator'; // Reset to default color
+                    strengthBarIndicator.className = 'strength-bar-indicator'; // Reset to default (neutral) color
                     [lengthCheck, uppercaseCheck, numberCheck, symbolCheck].forEach(el => {
                         el.classList.remove('met');
                         el.querySelector('.icon i').className = 'fas fa-times';
@@ -852,12 +792,12 @@
                     else if (hasLowercase && !hasUppercase && !hasNumber && !hasSymbol) category = 'lower';
                     else if (hasNumber && hasLowercase && hasUppercase && !hasSymbol) category = 'numUpperLower';
                     else if (hasNumber && hasLowercase && hasUppercase && hasSymbol) category = 'all';
-                    else if (hasNumber && hasLowercase && !hasUppercase && !hasSymbol) category = 'numUpperLower'; // Simplified
-                    else if (hasNumber && hasUppercase && !hasLowercase && !hasSymbol) category = 'numUpperLower'; // Simplified
-                    else if ((hasLowercase || hasUppercase) && hasSymbol && !hasNumber) category = 'all'; // Simplified
-                    else if (hasNumber && hasSymbol && !hasLowercase && !hasUppercase) category = 'all'; // Simplified
+                    else if (hasNumber && hasLowercase && !hasUppercase && !hasSymbol) category = 'numUpperLower';
+                    else if (hasNumber && hasUppercase && !hasLowercase && !hasSymbol) category = 'numUpperLower';
+                    else if ((hasLowercase || hasUppercase) && hasSymbol && !hasNumber) category = 'all';
+                    else if (hasNumber && hasSymbol && !hasLowercase && !hasUppercase) category = 'all';
                     else if (hasUppercase && !hasLowercase && !hasNumber && !hasSymbol) category = 'upperLower';
-                    else category = 'all'; // Default to most complex if mixed
+                    else category = 'all';
 
                     let totalMinutesBigInt = 0n;
                     if (length < 4) totalMinutesBigInt = 0n;
@@ -869,23 +809,19 @@
                     }
 
                     newCrackTimeText = minutesToJapaneseTime(totalMinutesBigInt);
+                    const colorClassForTime = getColorClassForTime(totalMinutesBigInt); // "color-stepX"
 
-                    if (totalMinutesBigInt >= 0n) {
-                        const colorClassTime = getColorClassForTime(totalMinutesBigInt); // "color-stepX"
-                        if(colorClassTime) strengthColorClassSuffix = colorClassTime.replace('color-', 'strength-');
-
-                        switch (strengthColorClassSuffix) {
-                            case 'strength-step1': newPasswordStrengthText = '非常に弱い'; break;
-                            case 'strength-step2': newPasswordStrengthText = '弱い'; break;
-                            case 'strength-step3': newPasswordStrengthText = '普通'; break;
-                            case 'strength-step4': newPasswordStrengthText = '強い'; break;
-                            case 'strength-step5': newPasswordStrengthText = '非常に強い'; break;
-                            case 'strength-step6': newPasswordStrengthText = '極めて強い'; break;
-                            default: newPasswordStrengthText = '-'; break;
+                    if (colorClassForTime) {
+                        strengthColorClassSuffix = colorClassForTime.replace('color-', 'strength-'); // "strength-stepX"
+                        const levelIndex = parseInt(strengthColorClassSuffix.replace('strength-step', ''), 10) - 1;
+                        if (strengthLevelData[levelIndex]) {
+                            newPasswordStrengthText = strengthLevelData[levelIndex].level;
                         }
                     }
+
                     barWidthPercent = getStrengthBarWidth(strengthColorClassSuffix);
                     strengthBarIndicator.style.width = barWidthPercent;
+                    // Apply the color class to the bar. Ensure it always has the base class.
                     strengthBarIndicator.className = 'strength-bar-indicator' + (strengthColorClassSuffix ? ' ' + strengthColorClassSuffix : '');
 
 
@@ -899,18 +835,20 @@
                     symbolCheck.querySelector('.icon i').className = hasSymbol ? 'fas fa-check' : 'fas fa-times';
                 }
 
-                if (previousCrackTimeText !== newCrackTimeText || crackTimeElement.className.indexOf(strengthColorClassSuffix) === -1) {
-                   animateValueUpdate(crackTimeElement, newCrackTimeText, strengthColorClassSuffix);
+                // Update crack time display
+                if (previousCrackTimeText !== newCrackTimeText || crackTimeElement.className.indexOf(strengthColorClassSuffix) === -1 || (newCrackTimeText === '-' && crackTimeElement.className !== 'value')) {
+                   animateValueUpdate(crackTimeElement, newCrackTimeText, (newCrackTimeText === '-' ? '' : strengthColorClassSuffix));
                 }
                 previousCrackTimeText = newCrackTimeText;
 
-                if (previousPasswordStrengthText !== newPasswordStrengthText || passwordStrengthElement.className.indexOf(strengthColorClassSuffix) === -1) {
-                   animateValueUpdate(passwordStrengthElement, newPasswordStrengthText, strengthColorClassSuffix);
+                // Update password strength display
+                if (previousPasswordStrengthText !== newPasswordStrengthText || passwordStrengthElement.className.indexOf(strengthColorClassSuffix) === -1 || (newPasswordStrengthText === '-' && passwordStrengthElement.className !== 'value')) {
+                   animateValueUpdate(passwordStrengthElement, newPasswordStrengthText, (newPasswordStrengthText === '-' ? '' : strengthColorClassSuffix));
                 }
                 previousPasswordStrengthText = newPasswordStrengthText;
             }
 
-            // --- Table Generation Functions ---
+
             function generateCrackTimeTable() {
                 const mainTableBody = document.querySelector('#passwordStrengthTable tbody');
                 if (!mainTableBody) return;
@@ -926,7 +864,7 @@
                         const cellTime = row.insertCell();
                         let minutesBigInt = (len <= 18) ? parseRawTimeToMinutes(rawCrackTimes[len]?.[cat] || 'i') : extrapolateTime(len, cat, baseTimes[cat]);
                         cellTime.textContent = minutesToJapaneseTime(minutesBigInt);
-                        const colorClass = getColorClassForTime(minutesBigInt);
+                        const colorClass = getColorClassForTime(minutesBigInt); // Returns "color-stepX"
                         if (colorClass) cellTime.classList.add(colorClass);
                     });
                     len++;
@@ -957,19 +895,17 @@
                     row.insertCell().textContent = data.level;
                     const colorCell = row.insertCell();
                     const colorSpan = document.createElement('span');
-                    colorSpan.className = `value ${data.colorClass}`; // Use "value" for consistent styling if needed
+                    // Apply the 'value' class for padding and then the specific strength class for color
+                    colorSpan.className = `value ${data.colorClass}`;
                     colorSpan.style.cssText = 'display: inline-block; width: 20px; height: 20px; border-radius: 3px;';
+                    colorSpan.textContent = "\u00A0"; // Non-breaking space to ensure height if text color is same as bg
                     colorCell.appendChild(colorSpan);
                     row.insertCell().textContent = data.timeRange;
                 });
             }
 
-            // --- Initial Setup ---
             document.querySelectorAll('.fade-in-element').forEach((el, index) => {
-                // HTML style attribute for animation-delay takes precedence
-                if (!el.style.animationDelay) {
-                     el.style.animationDelay = `${index * 0.05}s`;
-                }
+                if (!el.style.animationDelay) el.style.animationDelay = `${index * 0.05}s`;
                 if (!el.classList.contains('fade-in-element')) el.classList.add('fade-in-element');
             });
 
@@ -977,9 +913,9 @@
             generateNumericUnitsTable();
             generateStrengthLevelsTable();
 
-            previousCrackTimeText = crackTimeElement.textContent;
-            previousPasswordStrengthText = passwordStrengthElement.textContent;
-            evaluatePassword(); // Initial password evaluation
+            previousCrackTimeText = crackTimeElement.textContent; // Should be '-' initially
+            previousPasswordStrengthText = passwordStrengthElement.textContent; // Should be '-' initially
+            evaluatePassword();
 
         });
     </script>
