@@ -497,9 +497,12 @@
             const WEEK_CONSTANT = DAY_CONSTANT * 7n;
             const MONTH_CONSTANT = DAY_CONSTANT * 30n;
             const YEAR_CONSTANT = DAY_CONSTANT * 365n;
-            const MURYOUTAISUU_YEARS_IN_MINUTES = YEAR_CONSTANT * 10n**68n;
-            const DISPLAY_CAP_THRESHOLD_MINUTES = (MURYOUTAISUU_YEARS_IN_MINUTES * 99999n) / 10n;
-            const DISPLAY_CAP_STRING = "9999.9無量大数年以上";
+            const MURYOUTAISUU_UNIT_YEARS = 10n**68n; // 無量大数が10の68乗年
+            const MURYOUTAISUU_YEARS_IN_MINUTES = YEAR_CONSTANT * MURYOUTAISUU_UNIT_YEARS;
+            // 9,999無量大数年を分に換算したものが上限の閾値
+            const DISPLAY_CAP_THRESHOLD_MINUTES = MURYOUTAISUU_YEARS_IN_MINUTES * 9999n;
+            const DISPLAY_CAP_STRING = "9,999無量大数年以上";
+
 
             const rawCrackTimes = {
                  4: { num: 'i', lower: 'i', upperLower: 'i', numUpperLower: 'i', all: 'i' },
@@ -536,7 +539,7 @@
             ];
 
             const japaneseUnits = [
-                { name: '無量大数年', threshold: MURYOUTAISUU_YEARS_IN_MINUTES, power: 68n },
+                { name: '無量大数年', threshold: MURYOUTAISUU_YEARS_IN_MINUTES, power: 68n }, // 1無量大数年 (分換算)
                 { name: '不可思議年', threshold: YEAR_CONSTANT * 10n**64n, power: 64n },
                 { name: '那由他年', threshold: YEAR_CONSTANT * 10n**60n, power: 60n },
                 { name: '阿僧祇年', threshold: YEAR_CONSTANT * 10n**56n, power: 56n },
@@ -561,7 +564,6 @@
 
             const charsetSizes = { num: 10n, lower: 26n, upperLower: 52n, numUpperLower: 62n, all: 94n };
 
-            // Updated 10-step strength levels
             const strengthLevelData = [
                 { level: '危険', colorClass: 'strength-step1', timeRange: '瞬時' },
                 { level: '非常に弱い', colorClass: 'strength-step2', timeRange: '1分未満' },
@@ -579,33 +581,56 @@
             function formatBigIntWithPrecision(valueBigInt, divisorBigInt, unitPower) {
                 if (divisorBigInt === 0n) return "エラー";
                 const integerPartOfUnit = valueBigInt / divisorBigInt;
-                let fractionDigits = 0;
-                if (unitPower !== undefined && unitPower >= 4n) {
-                    if (integerPartOfUnit < 10n) fractionDigits = 2;
-                    else if (integerPartOfUnit < 100n) fractionDigits = 1;
+
+                // 無量大数のような大きな単位で小数点以下を表示しない、または「9,999」のようにカンマ区切りにする
+                if (unitPower !== undefined && unitPower >= 68n) { // 無量大数以上の場合
+                     try { return (integerPartOfUnit <= BigInt(Number.MAX_SAFE_INTEGER)) ? Number(integerPartOfUnit).toLocaleString() : integerPartOfUnit.toString(); }
+                     catch(e) { return integerPartOfUnit.toString(); }
                 }
+
+
+                let fractionDigits = 0;
+                //万以上の単位で、整数部が小さい場合のみ小数点表示
+                if (unitPower !== undefined && unitPower >= 4n) {
+                    if (integerPartOfUnit < 10n) fractionDigits = 1; // 10万年未満ならX.Y万年
+                    // else if (integerPartOfUnit < 100n) fractionDigits = 1; // 100万年未満ならXY.Z万年 -> これをなくして整数表示に
+                }
+
                 if (fractionDigits === 0) {
                     try { return (integerPartOfUnit <= BigInt(Number.MAX_SAFE_INTEGER)) ? Number(integerPartOfUnit).toLocaleString() : integerPartOfUnit.toString(); }
                     catch(e) { return integerPartOfUnit.toString(); }
                 }
+
                 const scale = 10n ** BigInt(fractionDigits);
-                const roundedScaledValue = ((valueBigInt * scale * 10n) / divisorBigInt + 5n) / 10n;
+                const roundedScaledValue = ((valueBigInt * scale * 10n) / divisorBigInt + 5n) / 10n; // 四捨五入のため10倍して5を足して10で割る
+
                 const finalIntegerPart = roundedScaledValue / scale;
                 const finalDecimalPart = roundedScaledValue % scale;
+
                 let numStr = "";
                 try { numStr = (finalIntegerPart <= BigInt(Number.MAX_SAFE_INTEGER)) ? Number(finalIntegerPart).toLocaleString() : finalIntegerPart.toString(); }
                 catch(e) { numStr = finalIntegerPart.toString(); }
-                return `${numStr}.${finalDecimalPart.toString().padStart(fractionDigits, '0')}`;
+
+                const decimalStr = finalDecimalPart.toString().padStart(fractionDigits, '0');
+                return `${numStr}.${decimalStr}`;
             }
 
             function minutesToJapaneseTime(totalMinutesBigInt) {
                 if (totalMinutesBigInt === 0n) return '瞬時';
                 if (totalMinutesBigInt < 0n) return 'エラー';
-                if (totalMinutesBigInt >= DISPLAY_CAP_THRESHOLD_MINUTES) return DISPLAY_CAP_STRING;
+
+                // 新しいDISPLAY_CAP_THRESHOLD_MINUTESと比較
+                if (totalMinutesBigInt >= DISPLAY_CAP_THRESHOLD_MINUTES) {
+                    return DISPLAY_CAP_STRING;
+                }
+
                 if (totalMinutesBigInt < MINUTE_CONSTANT) return '1分未満';
+
                 for (const unit of japaneseUnits) {
                     if (totalMinutesBigInt >= unit.threshold) {
                         let displayValueStr = formatBigIntWithPrecision(totalMinutesBigInt, unit.threshold, unit.power);
+
+                        // 万年単位での切り替えロジック (1万年以上の場合)
                         if (unit.name === '年' && (totalMinutesBigInt / unit.threshold) >= 10000n) {
                             const manUnit = japaneseUnits.find(u => u.name === '万年');
                             if (manUnit) {
@@ -616,8 +641,8 @@
                         return `${displayValueStr}${unit.name}`;
                     }
                 }
-                try { return `${(totalMinutesBigInt <= BigInt(Number.MAX_SAFE_INTEGER)) ? Number(totalMinutesBigInt).toLocaleString() : totalMinutesBigInt.toString()}分`; }
-                catch(e) { return `${totalMinutesBigInt.toString()}分`; }
+                 try { return `${(totalMinutesBigInt <= BigInt(Number.MAX_SAFE_INTEGER)) ? Number(totalMinutesBigInt).toLocaleString() : totalMinutesBigInt.toString()}分`; }
+                 catch(e) { return `${totalMinutesBigInt.toString()}分`; }
             }
 
             function parseRawTimeToMinutes(rawTime) {
@@ -631,36 +656,29 @@
                 } catch (e) { return -1n; }
             }
 
-            // Updated to return 10 color classes
             function getColorClassForTime(totalMinutesBigInt) {
-                if (totalMinutesBigInt < 0n) return ''; // Error
-
-                if (totalMinutesBigInt === 0n) return 'color-step1';  // 危険 (瞬時)
-
-                // Thresholds in minutes (BigInt)
-                const th_step2 = MINUTE_CONSTANT;           // 1分
-                const th_step3 = HOUR_CONSTANT * 3n;        // 3時間
-                const th_step4 = DAY_CONSTANT * 2n;         // 2日
-                const th_step5 = MONTH_CONSTANT * 2n;       // 2ヶ月
-                const th_step6 = YEAR_CONSTANT * 50n;       // 50年
-                const th_step7 = YEAR_CONSTANT * 3000n;     // 3千年
-                const th_step8 = YEAR_CONSTANT * 2000000n;  // 2百万年 (2 My)
-                const th_step9 = YEAR_CONSTANT * 10n**12n;  // 1兆年 (1 Ty)
-                // Step 10 is for anything above step 9
-
-                if (totalMinutesBigInt < th_step2) return 'color-step2';  // 非常に弱い
-                if (totalMinutesBigInt < th_step3) return 'color-step3';  // 弱い
-                if (totalMinutesBigInt < th_step4) return 'color-step4';  // やや弱い
-                if (totalMinutesBigInt < th_step5) return 'color-step5';  // 普通
-                if (totalMinutesBigInt < th_step6) return 'color-step6';  // やや強い
-                if (totalMinutesBigInt < th_step7) return 'color-step7';  // 強い
-                if (totalMinutesBigInt < th_step8) return 'color-step8';  // 非常に強い
-                if (totalMinutesBigInt < th_step9) return 'color-step9';  // 極めて強い
-                return 'color-step10'; // ほぼ解読不能
+                if (totalMinutesBigInt < 0n) return '';
+                if (totalMinutesBigInt === 0n) return 'color-step1';
+                const th_step2 = MINUTE_CONSTANT;
+                const th_step3 = HOUR_CONSTANT * 3n;
+                const th_step4 = DAY_CONSTANT * 2n;
+                const th_step5 = MONTH_CONSTANT * 2n;
+                const th_step6 = YEAR_CONSTANT * 50n;
+                const th_step7 = YEAR_CONSTANT * 3000n;
+                const th_step8 = YEAR_CONSTANT * 2000000n;
+                const th_step9 = YEAR_CONSTANT * 10n**12n;
+                if (totalMinutesBigInt < th_step2) return 'color-step2';
+                if (totalMinutesBigInt < th_step3) return 'color-step3';
+                if (totalMinutesBigInt < th_step4) return 'color-step4';
+                if (totalMinutesBigInt < th_step5) return 'color-step5';
+                if (totalMinutesBigInt < th_step6) return 'color-step6';
+                if (totalMinutesBigInt < th_step7) return 'color-step7';
+                if (totalMinutesBigInt < th_step8) return 'color-step8';
+                if (totalMinutesBigInt < th_step9) return 'color-step9';
+                return 'color-step10';
             }
 
-            // Updated for 10 steps
-            function getStrengthBarWidth(colorClassSuffix) { // e.g. "strength-step1"
+            function getStrengthBarWidth(colorClassSuffix) {
                 if (!colorClassSuffix) return '0%';
                 const stepNumber = parseInt(colorClassSuffix.replace('strength-step', ''), 10);
                 if (isNaN(stepNumber) || stepNumber < 1 || stepNumber > 10) return '0%';
@@ -670,30 +688,45 @@
             function bigIntPower(base, exp) {
                 let res = 1n; let b = base; let e = exp;
                 if (e < 0n) return 0n; if (e === 0n) return 1n;
-                const cap = DISPLAY_CAP_THRESHOLD_MINUTES * 1000n;
+                // DISPLAY_CAP_THRESHOLD_MINUTES を超過しないように調整
+                const cap = DISPLAY_CAP_THRESHOLD_MINUTES * 2n; // 少し余裕を持たせる
                 while (e > 0n) {
-                    if (e % 2n === 1n) { if (b > 0n && res > cap / b) return cap; res *= b; }
-                    if (res > cap) return cap; e /= 2n;
-                    if (e > 0n) { if (b > 0n && b > cap / b && b !== 1n) return cap; b *= b; }
-                    if (b > cap && b !== 1n) return cap;
+                    if (e % 2n === 1n) {
+                        if (b > 0n && res > cap / b) return cap; // オーバーフローチェック
+                        res *= b;
+                    }
+                    if (res > cap) return cap; // 早めにキャップ
+                    e /= 2n;
+                    if (e > 0n) {
+                         if (b > 0n && b > cap / b && b !== 1n) return cap; // オーバーフローチェック
+                        b *= b;
+                    }
+                    if (b > cap && b !== 1n) return cap; // 早めにキャップ
                 }
                 return res;
             }
 
+
             function extrapolateTime(len, category, baseMinutesBigInt) {
                  if (baseMinutesBigInt < 0n) return -1n;
-                 if (baseMinutesBigInt === 0n && len > 18) return 0n; // If base is instant, extrapolation beyond table is still instant
+                 if (baseMinutesBigInt === 0n && len > 18) return 0n;
                  const charsetSize = charsetSizes[category] || 94n;
                  const exponent = BigInt(len - 18);
                  try {
                     const multiplier = bigIntPower(charsetSize, exponent);
-                    if (baseMinutesBigInt > 0n && multiplier > 0n && baseMinutesBigInt > (DISPLAY_CAP_THRESHOLD_MINUTES * 10000n) / multiplier) {
+                    // 乗算結果が DISPLAY_CAP_THRESHOLD_MINUTES を超える可能性がある場合、DISPLAY_CAP_THRESHOLD_MINUTES を返す
+                    if (baseMinutesBigInt > 0n && multiplier > 0n && baseMinutesBigInt > DISPLAY_CAP_THRESHOLD_MINUTES / multiplier) {
                         return DISPLAY_CAP_THRESHOLD_MINUTES;
                     }
                     const result = baseMinutesBigInt * multiplier;
-                     return (result > DISPLAY_CAP_THRESHOLD_MINUTES * 100n) ? DISPLAY_CAP_THRESHOLD_MINUTES : result;
-                 } catch (e) { return DISPLAY_CAP_THRESHOLD_MINUTES; }
+                    // 結果が閾値より大きい場合は閾値を返す
+                    return (result > DISPLAY_CAP_THRESHOLD_MINUTES) ? DISPLAY_CAP_THRESHOLD_MINUTES : result;
+                 } catch (e) {
+                    // エラー時も閾値を返す（非常に大きな数になった場合など）
+                    return DISPLAY_CAP_THRESHOLD_MINUTES;
+                 }
             }
+
 
             function animateValueUpdate(element, newText, newColorClassSuffix) {
                 const textChanged = element.textContent !== newText;
@@ -701,7 +734,7 @@
                 const classChanged = newColorClassSuffix !== currentSuffix;
 
                 element.textContent = newText;
-                if (newText === '-' || !newColorClassSuffix) { // No color for '-'
+                if (newText === '-' || !newColorClassSuffix) {
                     element.className = 'value';
                 } else {
                     element.className = 'value ' + newColorClassSuffix;
@@ -770,12 +803,12 @@
 
                 let newCrackTimeText = '-';
                 let newPasswordStrengthText = '-';
-                let strengthColorClassSuffix = ''; // e.g., "strength-step1" (used for bar and text background)
+                let strengthColorClassSuffix = '';
                 let barWidthPercent = '0%';
 
                 if (length === 0) {
                     strengthBarIndicator.style.width = '0%';
-                    strengthBarIndicator.className = 'strength-bar-indicator'; // Reset to default (neutral) color
+                    strengthBarIndicator.className = 'strength-bar-indicator';
                     [lengthCheck, uppercaseCheck, numberCheck, symbolCheck].forEach(el => {
                         el.classList.remove('met');
                         el.querySelector('.icon i').className = 'fas fa-times';
@@ -809,10 +842,10 @@
                     }
 
                     newCrackTimeText = minutesToJapaneseTime(totalMinutesBigInt);
-                    const colorClassForTime = getColorClassForTime(totalMinutesBigInt); // "color-stepX"
+                    const colorClassForTime = getColorClassForTime(totalMinutesBigInt);
 
                     if (colorClassForTime) {
-                        strengthColorClassSuffix = colorClassForTime.replace('color-', 'strength-'); // "strength-stepX"
+                        strengthColorClassSuffix = colorClassForTime.replace('color-', 'strength-');
                         const levelIndex = parseInt(strengthColorClassSuffix.replace('strength-step', ''), 10) - 1;
                         if (strengthLevelData[levelIndex]) {
                             newPasswordStrengthText = strengthLevelData[levelIndex].level;
@@ -821,7 +854,6 @@
 
                     barWidthPercent = getStrengthBarWidth(strengthColorClassSuffix);
                     strengthBarIndicator.style.width = barWidthPercent;
-                    // Apply the color class to the bar. Ensure it always has the base class.
                     strengthBarIndicator.className = 'strength-bar-indicator' + (strengthColorClassSuffix ? ' ' + strengthColorClassSuffix : '');
 
 
@@ -835,13 +867,11 @@
                     symbolCheck.querySelector('.icon i').className = hasSymbol ? 'fas fa-check' : 'fas fa-times';
                 }
 
-                // Update crack time display
                 if (previousCrackTimeText !== newCrackTimeText || crackTimeElement.className.indexOf(strengthColorClassSuffix) === -1 || (newCrackTimeText === '-' && crackTimeElement.className !== 'value')) {
                    animateValueUpdate(crackTimeElement, newCrackTimeText, (newCrackTimeText === '-' ? '' : strengthColorClassSuffix));
                 }
                 previousCrackTimeText = newCrackTimeText;
 
-                // Update password strength display
                 if (previousPasswordStrengthText !== newPasswordStrengthText || passwordStrengthElement.className.indexOf(strengthColorClassSuffix) === -1 || (newPasswordStrengthText === '-' && passwordStrengthElement.className !== 'value')) {
                    animateValueUpdate(passwordStrengthElement, newPasswordStrengthText, (newPasswordStrengthText === '-' ? '' : strengthColorClassSuffix));
                 }
@@ -864,7 +894,7 @@
                         const cellTime = row.insertCell();
                         let minutesBigInt = (len <= 18) ? parseRawTimeToMinutes(rawCrackTimes[len]?.[cat] || 'i') : extrapolateTime(len, cat, baseTimes[cat]);
                         cellTime.textContent = minutesToJapaneseTime(minutesBigInt);
-                        const colorClass = getColorClassForTime(minutesBigInt); // Returns "color-stepX"
+                        const colorClass = getColorClassForTime(minutesBigInt);
                         if (colorClass) cellTime.classList.add(colorClass);
                     });
                     len++;
@@ -895,10 +925,9 @@
                     row.insertCell().textContent = data.level;
                     const colorCell = row.insertCell();
                     const colorSpan = document.createElement('span');
-                    // Apply the 'value' class for padding and then the specific strength class for color
                     colorSpan.className = `value ${data.colorClass}`;
                     colorSpan.style.cssText = 'display: inline-block; width: 20px; height: 20px; border-radius: 3px;';
-                    colorSpan.textContent = "\u00A0"; // Non-breaking space to ensure height if text color is same as bg
+                    colorSpan.textContent = "\u00A0";
                     colorCell.appendChild(colorSpan);
                     row.insertCell().textContent = data.timeRange;
                 });
@@ -913,8 +942,8 @@
             generateNumericUnitsTable();
             generateStrengthLevelsTable();
 
-            previousCrackTimeText = crackTimeElement.textContent; // Should be '-' initially
-            previousPasswordStrengthText = passwordStrengthElement.textContent; // Should be '-' initially
+            previousCrackTimeText = crackTimeElement.textContent;
+            previousPasswordStrengthText = passwordStrengthElement.textContent;
             evaluatePassword();
 
         });
