@@ -404,7 +404,6 @@
                 <span class="icon"><i class="fas fa-shield-alt"></i></span>
                 <span>パスワード強度</span>
                 <span class="info-icon" id="strengthInfoBtn" aria-label="パスワード強度の情報"><i class="fas fa-info-circle"></i></span>
-                <span class="info-icon" id="entropyInfoBtn" aria-label="エントロピーとは？" style="margin-left: 5px;"><i class="fas fa-question-circle"></i></span>
                 <span class="value" id="passwordStrength">-</span>
                 <div class="info-popup align-left popup-above" id="strengthInfoPopup">
                     <strong>パスワード強度について</strong><br>
@@ -415,6 +414,12 @@
                     - 一般的な日付パターン<br>
                     上記を基に実効エントロピーを算出し、強力な攻撃（毎秒1兆回の試行を仮定）で破られるまでの時間から強度を判定しています。
                 </div>
+            </div>
+            <div class="result-item">
+                <span class="icon"><i class="fas fa-calculator"></i></span>
+                <span>エントロピー</span>
+                <span class="info-icon" id="entropyInfoBtn" aria-label="エントロピーとは？"><i class="fas fa-question-circle"></i></span>
+                <span class="value" id="entropyValue">-</span>
                 <div class="info-popup align-right popup-above" id="entropyInfoPopup">
                     <strong>エントロピーとは？</strong><br>
                     パスワードの「予測困難性」または「ランダム性」をビット単位で表す尺度です。数値が高いほど、パスワードを推測するのが難しくなります。<br>
@@ -429,12 +434,12 @@
             </div>
         </div>
         <div class="table-toggle-buttons fade-in-element" style="animation-delay: 0.5s;">
-            <div> <!-- ボタンと情報アイコンのコンテナ -->
+            <div>
                 <button id="toggleCrackTimeTableBtn">
                     パスワード解析時間の目安表
                     <span class="info-icon" id="crackTimeTableInfoBtn" aria-label="目安表の情報"><i class="fas fa-info-circle"></i></span>
                 </button>
-                <div class="info-popup align-left popup-below" id="crackTimeTableInfoPopup"> <!-- popup-belowを追加 -->
+                <div class="info-popup align-left popup-below" id="crackTimeTableInfoPopup">
                     <strong>パスワード解析時間の目安表について</strong>
                     この表は、指定された文字種のみを使用し、完全にランダムな文字列でパスワードを作成した場合の、理論的な解析時間を示します。<br>
                     <strong style="margin-top:8px;">計算の前提:</strong>
@@ -508,6 +513,7 @@
             const togglePasswordIcon = togglePassword.querySelector('i');
             const crackTimeElement = document.getElementById('crackTime');
             const passwordStrengthElement = document.getElementById('passwordStrength');
+            const entropyValueElement = document.getElementById('entropyValue');
             const strengthBarIndicator = document.getElementById('strengthBarIndicator');
             const lengthCheck = document.getElementById('lengthCheck');
             const uppercaseCheck = document.getElementById('uppercaseCheck');
@@ -536,6 +542,7 @@
 
             let previousCrackTimeText = crackTimeElement.textContent;
             let previousPasswordStrengthText = passwordStrengthElement.textContent;
+            let previousEntropyValueText = entropyValueElement.textContent;
 
             const ATTEMPTS_PER_SECOND_ADVANCED = 1_000_000_000_000n; 
 
@@ -907,8 +914,6 @@
             });
             [timeInfoPopup, strengthInfoPopup, entropyInfoPopup, crackTimeTableInfoPopup].forEach(popup => {
                 popup.addEventListener('click', e => {
-                    // ポップアップ内のコンテンツクリックでポップアップが閉じないようにする
-                    // ただし、背景クリックの場合は setupPopup 内のリスナーで閉じる
                     if (e.target !== popup) {
                          e.stopPropagation();
                     }
@@ -918,7 +923,6 @@
 
             function setupTableToggle(button, tableContainerElement, allTableContainers) {
                 button.addEventListener('click', (e) => {
-                    // 情報アイコンがクリックされた場合は、テーブルのトグルを実行しない
                     if (e.target.closest('.info-icon')) {
                         return;
                     }
@@ -945,6 +949,7 @@
                 const length = password.length;
                 let newCrackTimeText = '-';
                 let newPasswordStrengthText = '-';
+                let newEntropyValueText = '-'; 
                 let strengthColorClassSuffix = '';
                 let barWidthPercent = '0%';
 
@@ -968,8 +973,10 @@
                     
                     const strengthInfo = getStrengthLevelFromEntropy(effectiveEntropy);
                     newPasswordStrengthText = strengthInfo.text;
-                    strengthColorClassSuffix = 'strength-step' + strengthInfo.step;
+                    strengthColorClassSuffix = 'strength-step' + strengthInfo.step; // This class is shared
                     barWidthPercent = strengthInfo.step * 10 + '%';
+
+                    newEntropyValueText = effectiveEntropy > 0 ? effectiveEntropy.toFixed(1) + ' bits' : (length > 0 ? '0.0 bits' : '-');
 
                     strengthBarIndicator.style.width = barWidthPercent;
                     strengthBarIndicator.className = 'strength-bar-indicator' + (strengthColorClassSuffix ? ' ' + strengthColorClassSuffix : '');
@@ -993,6 +1000,11 @@
                     animateValueUpdate(passwordStrengthElement, newPasswordStrengthText, (newPasswordStrengthText === '-' ? '' : strengthColorClassSuffix));
                 }
                 previousPasswordStrengthText = newPasswordStrengthText;
+
+                if (previousEntropyValueText !== newEntropyValueText || entropyValueElement.className.indexOf(strengthColorClassSuffix) === -1 || (newEntropyValueText === '-' && entropyValueElement.className !== 'value')) {
+                     animateValueUpdate(entropyValueElement, newEntropyValueText, (newEntropyValueText === '-' ? '' : strengthColorClassSuffix)); 
+                }
+                previousEntropyValueText = newEntropyValueText;
             }
 
             const ATTEMPTS_PER_SECOND_TABLE = 1_000_000_000n;
@@ -1112,6 +1124,7 @@
             generateStrengthLevelsTable();
             previousCrackTimeText = crackTimeElement.textContent;
             previousPasswordStrengthText = passwordStrengthElement.textContent;
+            previousEntropyValueText = entropyValueElement.textContent;
             evaluatePassword();
         });
     </script>
