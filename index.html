@@ -380,6 +380,7 @@
         <div class="criteria fade-in-element" style="animation-delay: 0.3s;">
             <div class="criterion" id="lengthCheck"><span class="icon"><i class="fas fa-times"></i></span><span>8文字以上</span></div>
             <div class="criterion" id="uppercaseCheck"><span class="icon"><i class="fas fa-times"></i></span><span>大文字を含む</span></div>
+            <div class="criterion" id="lowercaseCheck"><span class="icon"><i class="fas fa-times"></i></span><span>小文字を含む</span></div>
             <div class="criterion" id="numberCheck"><span class="icon"><i class="fas fa-times"></i></span><span>数字を含む</span></div>
             <div class="criterion" id="symbolCheck"><span class="icon"><i class="fas fa-times"></i></span><span>記号を含む</span></div>
         </div>
@@ -517,6 +518,7 @@
             const strengthBarIndicator = document.getElementById('strengthBarIndicator');
             const lengthCheck = document.getElementById('lengthCheck');
             const uppercaseCheck = document.getElementById('uppercaseCheck');
+            const lowercaseCheck = document.getElementById('lowercaseCheck'); // Added
             const numberCheck = document.getElementById('numberCheck');
             const symbolCheck = document.getElementById('symbolCheck');
             const timeInfoBtn = document.getElementById('timeInfoBtn');
@@ -956,13 +958,13 @@
                 if (length === 0) {
                     strengthBarIndicator.style.width = '0%';
                     strengthBarIndicator.className = 'strength-bar-indicator';
-                    [lengthCheck, uppercaseCheck, numberCheck, symbolCheck].forEach(el => {
+                    [lengthCheck, uppercaseCheck, lowercaseCheck, numberCheck, symbolCheck].forEach(el => {
                         el.classList.remove('met');
                         el.querySelector('.icon i').className = 'fas fa-times';
                     });
                 } else {
                     const hasUppercase = /[A-Z]/.test(password);
-                    const hasLowercase = /[a-z]/.test(password);
+                    const hasLowercase = /[a-z]/.test(password); // Check for lowercase
                     const hasNumber = /[0-9]/.test(password);
                     const hasSymbol = /[^A-Za-z0-9]/.test(password);
 
@@ -973,7 +975,7 @@
                     
                     const strengthInfo = getStrengthLevelFromEntropy(effectiveEntropy);
                     newPasswordStrengthText = strengthInfo.text;
-                    strengthColorClassSuffix = 'strength-step' + strengthInfo.step; // This class is shared
+                    strengthColorClassSuffix = 'strength-step' + strengthInfo.step;
                     barWidthPercent = strengthInfo.step * 10 + '%';
 
                     newEntropyValueText = effectiveEntropy > 0 ? effectiveEntropy.toFixed(1) + ' bits' : (length > 0 ? '0.0 bits' : '-');
@@ -983,10 +985,16 @@
 
                     lengthCheck.classList.toggle('met', length >= 8);
                     lengthCheck.querySelector('.icon i').className = length >= 8 ? 'fas fa-check' : 'fas fa-times';
+                    
                     uppercaseCheck.classList.toggle('met', hasUppercase);
                     uppercaseCheck.querySelector('.icon i').className = hasUppercase ? 'fas fa-check' : 'fas fa-times';
+                    
+                    lowercaseCheck.classList.toggle('met', hasLowercase); // Update lowercase check
+                    lowercaseCheck.querySelector('.icon i').className = hasLowercase ? 'fas fa-check' : 'fas fa-times';
+                    
                     numberCheck.classList.toggle('met', hasNumber);
                     numberCheck.querySelector('.icon i').className = hasNumber ? 'fas fa-check' : 'fas fa-times';
+                    
                     symbolCheck.classList.toggle('met', hasSymbol);
                     symbolCheck.querySelector('.icon i').className = hasSymbol ? 'fas fa-check' : 'fas fa-times';
                 }
@@ -1119,13 +1127,24 @@
                 if (!el.style.animationDelay) el.style.animationDelay = `${index * 0.05}s`;
                 if (!el.classList.contains('fade-in-element')) el.classList.add('fade-in-element');
             });
+            
             generateCrackTimeTable();
             generateNumericUnitsTable();
             generateStrengthLevelsTable();
+
+            // Initialize criteria check states
+            [lengthCheck, uppercaseCheck, lowercaseCheck, numberCheck, symbolCheck].forEach(el => {
+                if (el) { // Ensure element exists before trying to modify it
+                    el.classList.remove('met');
+                    const iconEl = el.querySelector('.icon i');
+                    if (iconEl) iconEl.className = 'fas fa-times';
+                }
+            });
+
             previousCrackTimeText = crackTimeElement.textContent;
             previousPasswordStrengthText = passwordStrengthElement.textContent;
             previousEntropyValueText = entropyValueElement.textContent;
-            evaluatePassword();
+            evaluatePassword(); // Initial evaluation
         });
     </script>
 </body>
