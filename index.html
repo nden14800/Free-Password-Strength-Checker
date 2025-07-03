@@ -838,18 +838,54 @@
                 return qStr + decimal + ' ' + found.name;
             }
             
-            function secondsToEnglishUnit(seconds) {
+            /**
+             * [修正] secondsToEnglishUnit: 1秒未満の単位 (ms, μs, ns) を表示するロジックを追加
+             * @param {BigInt} seconds - 解析にかかる秒数 (整数)
+             * @param {number} [entropy=0] - 1秒未満の計算に使用するエントロピー
+             * @param {BigInt} [attemptsPerSecond=0n] - 1秒未満の計算に使用する秒間試行回数
+             * @returns {string} フォーマットされた時間
+             */
+            function secondsToEnglishUnit(seconds, entropy = 0, attemptsPerSecond = 0n) {
                 if (seconds >= MAX_DISPLAYABLE_UNCENTILLION_SECONDS) {
                     return 'uncentillion 年以上';
                 }
-                if (seconds < 1n && seconds >= 0n) return '瞬時';
-                if (seconds < 60n) return (seconds > 1n ? seconds.toLocaleString('en') + ' 秒' : '1 秒');
-                if (seconds < 3600n) return (seconds / 60n).toLocaleString('en') + ' 分';
-                if (seconds < 86400n) return (seconds / 3600n).toLocaleString('en') + ' 時間';
-                if (seconds < SECONDS_PER_YEAR) return (seconds / 86400n).toLocaleString('en') + ' 日';
+
+                // 1秒以上の処理
+                if (seconds >= 1n) {
+                    if (seconds < 60n) return (seconds > 1n ? seconds.toLocaleString('en') + ' 秒' : '1 秒');
+                    if (seconds < 3600n) return (seconds / 60n).toLocaleString('en') + ' 分';
+                    if (seconds < 86400n) return (seconds / 3600n).toLocaleString('en') + ' 時間';
+                    if (seconds < SECONDS_PER_YEAR) return (seconds / 86400n).toLocaleString('en') + ' 日';
+                    
+                    const years = seconds / SECONDS_PER_YEAR;
+                    return formatBigNum(years) + ' 年';
+                }
+
+                // 1秒未満の処理
+                if (entropy <= 0 || attemptsPerSecond === 0n) {
+                    return '瞬時';
+                }
+
+                const combinations = Math.pow(2, entropy);
+                const timeInSecondsFloat = combinations / Number(attemptsPerSecond);
+
+                if (timeInSecondsFloat <= 1e-9) { // 1ナノ秒以下は「瞬時」
+                    return '瞬時';
+                }
+                if (timeInSecondsFloat < 1e-6) { // 1マイクロ秒未満はナノ秒(ns)で表示
+                    const ns = timeInSecondsFloat * 1e9;
+                    return `${parseFloat(ns.toPrecision(3))} ns`;
+                }
+                if (timeInSecondsFloat < 1e-3) { // 1ミリ秒未満はマイクロ秒(μs)で表示
+                    const us = timeInSecondsFloat * 1e6;
+                    return `${parseFloat(us.toPrecision(3))} μs`;
+                }
+                if (timeInSecondsFloat < 1) { // 1秒未満はミリ秒(ms)で表示
+                    const ms = timeInSecondsFloat * 1e3;
+                    return `${parseFloat(ms.toPrecision(3))} ms`;
+                }
                 
-                let years = seconds / SECONDS_PER_YEAR;
-                return formatBigNum(years) + ' 年';
+                return '瞬時'; // フォールバック
             }
 
             function animateValueUpdate(element, newText, newColorClassSuffix) {
@@ -971,7 +1007,8 @@
                     const effectiveEntropy = calculateEffectiveEntropy(password);
                     const totalSeconds = calculateAdvancedCrackTimeSeconds(effectiveEntropy);
                     
-                    newCrackTimeText = secondsToEnglishUnit(totalSeconds);
+                    // [修正] secondsToEnglishUnitの呼び出しに引数を追加
+                    newCrackTimeText = secondsToEnglishUnit(totalSeconds, effectiveEntropy, ATTEMPTS_PER_SECOND_ADVANCED);
                     
                     const strengthInfo = getStrengthLevelFromEntropy(effectiveEntropy);
                     newPasswordStrengthText = strengthInfo.text;
@@ -1044,27 +1081,49 @@
                     return TABLE_CLIPPING_SECONDS_VALUE; 
                 }
             }
-
-            function getColorClassForTimeForTable(seconds) {
+            
+            /**
+             * [修正] getColorClassForTimeForTable: 1秒未満の時間も考慮して色を返すように修正
+             * @param {BigInt} seconds - 解析にかかる秒数 (整数)
+             * @param {number} [entropy=0] - 1秒未満の計算に使用するエントロピー
+             * @param {BigInt} [attemptsPerSecond=0n] - 1秒未満の計算に使用する秒間試行回数
+             * @returns {string} 色のCSSクラス名
+             */
+            function getColorClassForTimeForTable(seconds, entropy = 0, attemptsPerSecond = 0n) {
                 if (seconds >= MAX_DISPLAYABLE_UNCENTILLION_SECONDS) return 'color-step10';
 
-                if (seconds < 0n) return '';
-                if (seconds === 0n) return 'color-step1';
-                const MINUTE = 60n;
-                const HOUR = 60n * MINUTE;
-                const DAY = 24n * HOUR;
-                const YEAR = SECONDS_PER_YEAR;
+                if (seconds >= 1n) {
+                    const MINUTE = 60n;
+                    const HOUR = 60n * MINUTE;
+                    const DAY = 24n * HOUR;
+                    const YEAR = SECONDS_PER_YEAR;
 
-                if (seconds < MINUTE) return 'color-step2';
-                if (seconds < HOUR * 3n) return 'color-step3';
-                if (seconds < DAY * 2n) return 'color-step4';
-                if (seconds < DAY * 60n) return 'color-step5';
-                if (seconds < YEAR * 50n) return 'color-step6';
-                if (seconds < YEAR * 3000n) return 'color-step7';
-                if (seconds < YEAR * 2000000n) return 'color-step8'; 
-                if (seconds < YEAR * (10n**12n)) return 'color-step9';
-                return 'color-step10';
+                    if (seconds < MINUTE) return 'color-step2';
+                    if (seconds < HOUR * 3n) return 'color-step3';
+                    if (seconds < DAY * 2n) return 'color-step4';
+                    if (seconds < DAY * 60n) return 'color-step5';
+                    if (seconds < YEAR * 50n) return 'color-step6';
+                    if (seconds < YEAR * 3000n) return 'color-step7';
+                    if (seconds < YEAR * 2000000n) return 'color-step8';
+                    if (seconds < YEAR * (10n ** 12n)) return 'color-step9';
+                    return 'color-step10';
+                }
+
+                // 1秒未満の処理
+                if (entropy <= 0 || attemptsPerSecond === 0n) {
+                    return 'color-step1'; // 瞬時
+                }
+
+                const combinations = Math.pow(2, entropy);
+                const timeInSecondsFloat = combinations / Number(attemptsPerSecond);
+
+                if (timeInSecondsFloat < 1e-3) { // 1ミリ秒未満は「危険」
+                    return 'color-step1';
+                }
+                // 1ミリ秒から1秒未満は「非常に弱い」
+                return 'color-step2';
             }
+
 
             function generateCrackTimeTable() {
                 const mainTableBody = document.querySelector('#passwordStrengthTable tbody');
@@ -1074,12 +1133,14 @@
                 for (let len = 4; len <= 323; ++len) { 
                     const row = mainTableBody.insertRow();
                     row.insertCell().textContent = len;
+                    // [修正] ループ内で呼び出す関数に引数を追加
                     categories.forEach(catKey => {
                         const cell = row.insertCell();
                         const charsetSize = charsetSizesForTable[catKey];
+                        const entropy = len * (Math.log(Number(charsetSize)) / Math.log(2));
                         let sec = calcCrackTimeSecondsForTable(charsetSize, len);
-                        cell.textContent = secondsToEnglishUnit(sec);
-                        const colorClass = getColorClassForTimeForTable(sec);
+                        cell.textContent = secondsToEnglishUnit(sec, entropy, ATTEMPTS_PER_SECOND_TABLE);
+                        const colorClass = getColorClassForTimeForTable(sec, entropy, ATTEMPTS_PER_SECOND_TABLE);
                         if (colorClass) cell.classList.add(colorClass);
                     });
                 }
